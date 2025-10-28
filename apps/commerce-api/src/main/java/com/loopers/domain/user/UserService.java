@@ -13,13 +13,13 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional
-    User register(String userId, String email, String birth) {
+    public void register(String userId, String email, String birth) {
         userRepository.findByUserId(userId).ifPresent(user -> {
             throw new CoreException(ErrorType.CONFLICT);
         });
 
         User user = new User(userId, email, birth);
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
 }
