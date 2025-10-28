@@ -14,6 +14,7 @@ public class UserModelTest {
     class Create {
         private final String validId = "user123";
         private final String validEmail = "xx@yy.zz";
+        private final String validBirthday = "1993-03-13";
 
         // ID 가 영문 및 숫자 10자 이내 형식에 맞지 않으면, User 객체 생성에 실패한다.
 
@@ -25,7 +26,7 @@ public class UserModelTest {
 
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                User.create(invalidId, validEmail);
+                User.create(invalidId, validEmail, validBirthday);
             });
 
             // assert
@@ -40,7 +41,7 @@ public class UserModelTest {
 
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                User.create(invalidId, validEmail);
+                User.create(invalidId, validEmail, validBirthday);
             });
 
             // assert
@@ -60,7 +61,7 @@ public class UserModelTest {
 
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                User.create(validId, invalidEmail);
+                User.create(validId, invalidEmail, validBirthday);
             });
 
             // assert
@@ -75,7 +76,7 @@ public class UserModelTest {
 
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                User.create(validId, invalidEmail);
+                User.create(validId, invalidEmail, validBirthday);
             });
 
             // assert
@@ -90,7 +91,7 @@ public class UserModelTest {
 
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                User.create(validId, invalidEmail);
+                User.create(validId, invalidEmail, validBirthday);
             });
 
             // assert
@@ -105,7 +106,7 @@ public class UserModelTest {
 
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                User.create(validId, invalidEmail);
+                User.create(validId, invalidEmail, validBirthday);
             });
 
             // assert
@@ -114,5 +115,81 @@ public class UserModelTest {
 
         // extra case
         // 공백이 포함된 경우
+
+        // 생년월일이 yyyy-MM-dd 형식에 맞지 않으면, User 객체 생성에 실패한다.
+        @DisplayName("생년월일이 yyyy-MM-dd 형식에 맞지 않으면, User 객체 생성에 실패한다. - 잘못된 형식인 경우 13-03-1993")
+        @Test
+        void throwsException_whenBirthdayIsInvalidFormat() {
+            // arrange
+            String invalidBirthday = "13-03-1993";
+
+            // act
+            CoreException result = assertThrows(CoreException.class, () -> {
+                User.create(validId, validEmail, invalidBirthday);
+            });
+
+            // assert
+            assertThat(result.getMessage()).isEqualTo("생년월일 형식이 올바르지 않습니다.");
+        }
+
+        @DisplayName("생년월일이 yyyy-MM-dd 형식에 맞지 않으면, User 객체 생성에 실패한다. - 잘못된 형식인 경우 1993/03/13")
+        @Test
+        void throwsException_whenBirthdayIsInvalidFormat_Slashes() {
+            // arrange
+            String invalidBirthday = "1993/03/13";
+
+            // act
+            CoreException result = assertThrows(CoreException.class, () -> {
+                User.create(validId, validEmail, invalidBirthday);
+            });
+
+            // assert
+            assertThat(result.getMessage()).isEqualTo("생년월일 형식이 올바르지 않습니다.");
+        }
+
+        @DisplayName("생년월일이 yyyy-MM-dd 형식에 맞지 않으면, User 객체 생성에 실패한다. - 잘못된 형식인 경우 19930313")
+        @Test
+        void throwsException_whenBirthdayIsInvalidFormat_NoSeparators() {
+            // arrange
+            String invalidBirthday = "19930313";
+
+            // act
+            CoreException result = assertThrows(CoreException.class, () -> {
+                User.create(validId, validEmail, invalidBirthday);
+            });
+
+            // assert
+            assertThat(result.getMessage()).isEqualTo("생년월일 형식이 올바르지 않습니다.");
+        }
+
+        @DisplayName("생년월일이 yyyy-MM-dd 형식에 맞지 않으면, User 객체 생성에 실패한다. - 930313")
+        @Test
+        void throwsException_whenBirthdayIsInvalidFormat_ShortDate() {
+            // arrange
+            String invalidBirthday = "930313";
+
+            // act
+            CoreException result = assertThrows(CoreException.class, () -> {
+                User.create(validId, validEmail, invalidBirthday);
+            });
+
+            // assert
+            assertThat(result.getMessage()).isEqualTo("생년월일 형식이 올바르지 않습니다.");
+        }
+
+        @DisplayName("생년월일이 yyyy-MM-dd 형식에 맞지 않으면, User 객체 생성에 실패한다. - 빈 문자열")
+        @Test
+        void throwsException_whenBirthdayIsInvalidFormat_EmptyString() {
+            // arrange
+            String invalidBirthday = "";
+
+            // act
+            CoreException result = assertThrows(CoreException.class, () -> {
+                User.create(validId, validEmail, invalidBirthday);
+            });
+
+            // assert
+            assertThat(result.getMessage()).isEqualTo("생년월일 형식이 올바르지 않습니다.");
+        }
     }
 }
