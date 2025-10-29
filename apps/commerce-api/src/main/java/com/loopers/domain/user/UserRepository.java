@@ -1,13 +1,10 @@
 package com.loopers.domain.user;
 
-import org.springframework.stereotype.Component;
-
 import java.util.Optional;
 
-@Component
 public interface UserRepository {
 
-    Optional<User> findByUserId(String id);
+    Optional<User> findByUserId(String userId);
 
-    void save(User user);
+    User save(User user);
 }

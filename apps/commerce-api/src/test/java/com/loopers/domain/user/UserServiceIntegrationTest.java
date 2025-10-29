@@ -1,13 +1,12 @@
 package com.loopers.domain.user;
 
+import com.loopers.support.error.CoreException;
 import com.loopers.utils.DatabaseCleanUp;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -28,7 +27,7 @@ class UserServiceIntegrationTest {
         databaseCleanUp.truncateAllTables();
     }
 
-    @DisplayName("통합 테스트 ")
+    @DisplayName("통합 테스트")
     @Nested
     class UserRegister {
 
@@ -38,13 +37,27 @@ class UserServiceIntegrationTest {
             String userId = "yh45g";
             String email = "yh45g@loopers.com";
             String brith = "1994-12-05";
+            String gender = "Male";
 
-            User user = new User(userId, email, brith);
             UserRepository userRepositorySpy = spy(userRepository);
             UserService userServiceSpy = new UserService(userRepositorySpy);
-            userServiceSpy.register(userId, email, brith);
+            userServiceSpy.register(userId, email, brith, gender);
 
-            verify(userRepositorySpy).save(user);
+            verify(userRepositorySpy).save(any(User.class));
+        }
+
+        @DisplayName("이미 가입된 ID 로 회원가입 시도 시, 실패한다.")
+        @Test
+        void register_whenUserIdAlreadyExists_thenFail() {
+            String userId = "yh45g";
+            String email = "yh45g@loopers.com";
+            String brith = "1994-12-05";
+            String gender = "Male";
+
+            userService.register(userId, email, brith, gender);
+
+            Assertions.assertThrows(CoreException.class, ()
+                    -> userService.register(userId, email, brith, gender));
         }
     }
 }
