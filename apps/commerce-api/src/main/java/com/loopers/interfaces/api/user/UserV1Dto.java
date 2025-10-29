@@ -1,7 +1,6 @@
 package com.loopers.interfaces.api.user;
 
 import com.loopers.application.user.UserInfo;
-import jakarta.validation.Valid;
 
 public class UserV1Dto {
     public record RegisterRequest(

@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "Users V1 API", description = "Users API입니다.")
+@Tag(name = "Users V1 API", description = "Users API 입니다.")
 public interface UserV1ApiSpec {
 
     @Operation(
