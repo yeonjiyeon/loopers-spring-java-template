@@ -12,7 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.function.Function;
 
@@ -23,18 +26,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserV1ControllerTest {
 
-    private static final String REGISTER_ENDPOINT = "/api/v1/users/register";
-    private static final Function<String, String> GETUSER_ENDPOINT = id -> "/api/v1/users/" + id;
-    private final TestRestTemplate testRestTemplate;
-    private final UserJpaRepository userJpaRepository;
-    private final DatabaseCleanUp databaseCleanUp;
+    private static final String USER_REGISTER_ENDPOINT = "/api/v1/users/register";
+    private static final Function<String, String> GET_USER_ENDPOINT = id -> "/api/v1/users/" + id;
 
     @Autowired
-    public UserV1ControllerTest(TestRestTemplate testRestTemplate, UserJpaRepository userJpaRepository, DatabaseCleanUp databaseCleanUp) {
-        this.testRestTemplate = testRestTemplate;
-        this.userJpaRepository = userJpaRepository;
-        this.databaseCleanUp = databaseCleanUp;
-    }
+    private TestRestTemplate testRestTemplate;
+
+    @Autowired
+    private UserJpaRepository userJpaRepository;
+
+    @Autowired
+    private DatabaseCleanUp databaseCleanUp;
 
     @AfterEach
     void tearDown() {
@@ -57,7 +59,7 @@ class UserV1ControllerTest {
             ParameterizedTypeReference<ApiResponse<UserV1Dto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
 
             ResponseEntity<ApiResponse<UserV1Dto.UserResponse>> response =
-                    testRestTemplate.exchange(REGISTER_ENDPOINT, HttpMethod.POST, new HttpEntity<>(request), responseType);
+                    testRestTemplate.exchange(USER_REGISTER_ENDPOINT, HttpMethod.POST, new HttpEntity<>(request), responseType);
 
             assertAll(
                     () -> assertTrue(response.getStatusCode().is2xxSuccessful()),
@@ -79,7 +81,7 @@ class UserV1ControllerTest {
 
             ParameterizedTypeReference<ApiResponse<UserV1Dto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
             ResponseEntity<ApiResponse<UserV1Dto.UserResponse>> response =
-                    testRestTemplate.exchange(REGISTER_ENDPOINT, HttpMethod.POST, new HttpEntity<>(request), responseType);
+                    testRestTemplate.exchange(USER_REGISTER_ENDPOINT, HttpMethod.POST, new HttpEntity<>(request), responseType);
 
             assertAll(
                     () -> assertTrue(response.getStatusCode().is4xxClientError()),
@@ -91,7 +93,7 @@ class UserV1ControllerTest {
     @DisplayName("GET /api/v1/users/{userId}")
     @Nested
     class GetUserById {
-        @DisplayName("해당 ID의 회원이 존재할 경우, 회원 정보가 반환된다.")
+        @DisplayName("내 정보 조회에 성공할 경우, 해당하는 유저 정보를 반환한다.")
         @Test
         void getUserById_whenSuccessResponseUser() {
             String userId = "yh45g";
@@ -101,7 +103,7 @@ class UserV1ControllerTest {
 
             userJpaRepository.save(new User(userId, email, birth, gender));
 
-            String requestUrl = GETUSER_ENDPOINT.apply(userId);
+            String requestUrl = GET_USER_ENDPOINT.apply(userId);
             ParameterizedTypeReference<ApiResponse<UserV1Dto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
             ResponseEntity<ApiResponse<UserV1Dto.UserResponse>> response =
                     testRestTemplate.exchange(requestUrl, HttpMethod.GET, new HttpEntity<>(null), responseType);
@@ -115,11 +117,11 @@ class UserV1ControllerTest {
             );
         }
 
-        @DisplayName("해당 ID의 회원이 존재하지 않을 경우, null 이 반환된다.")
+        @DisplayName("존재하지 않는 ID 로 조회할 경우, 404 Not Found 응답을 반환한다.")
         @Test
         void throwsException_whenInvalidUserIdIsProvided() {
             String userId = "notUserId";
-            String requestUrl = GETUSER_ENDPOINT.apply(userId);
+            String requestUrl = GET_USER_ENDPOINT.apply(userId);
             ParameterizedTypeReference<ApiResponse<UserV1Dto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
             ResponseEntity<ApiResponse<UserV1Dto.UserResponse>> response =
                     testRestTemplate.exchange(requestUrl, HttpMethod.GET, new HttpEntity<>(null), responseType);
@@ -130,5 +132,4 @@ class UserV1ControllerTest {
             );
         }
     }
-
 }

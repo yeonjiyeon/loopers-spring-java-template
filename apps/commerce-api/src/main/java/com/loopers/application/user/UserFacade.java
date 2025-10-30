@@ -18,8 +18,10 @@ public class UserFacade {
     }
 
     public UserInfo getUser(String userId) {
-        return userService.findUserByUserId(userId)
-                .map(UserInfo::from)
-                .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "회원 정보를 찾을 수 없습니다."));
+        User user = userService.findUserByUserId(userId);
+        if (user == null) {
+            throw new CoreException(ErrorType.NOT_FOUND, "사용자 존재하지 않습니다.");
+        }
+        return UserInfo.from(user);
     }
 }

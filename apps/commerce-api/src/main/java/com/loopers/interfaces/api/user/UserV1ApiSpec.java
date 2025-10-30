@@ -13,7 +13,7 @@ public interface UserV1ApiSpec {
             description = "회원 가입을 합니다."
     )
     ApiResponse<UserV1Dto.UserResponse> register(
-        @Schema(description = "회원가입")
+        @Schema(name = "회원 가입 요청", description = "회원가입")
         UserV1Dto.RegisterRequest request
     );
 

@@ -6,8 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Component
 @RequiredArgsConstructor
 public class UserService {
@@ -25,8 +23,8 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<User> findUserByUserId(String userId){
-        return userRepository.findByUserId(userId);
+    public User findUserByUserId(String userId){
+        return userRepository.findByUserId(userId).orElse(null);
     }
 
 }
