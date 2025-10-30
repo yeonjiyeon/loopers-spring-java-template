@@ -88,7 +88,16 @@ public class User {
   public Gender getGender() {
     return gender;
   }
+
   public int getPoint() {
     return point;
+  }
+
+  public void chargePoint(int amount) {
+    if (amount <= 0) {
+      throw new CoreException(ErrorType.BAD_REQUEST, "충전 금액은 0보다 커야 합니다.");
+    }
+
+    this.point += amount;
   }
 }

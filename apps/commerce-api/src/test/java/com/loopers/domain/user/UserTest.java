@@ -12,21 +12,23 @@ import org.junit.jupiter.api.Test;
 
 class UserTest {
 
+  private final String VALID_USER_ID = "validId10";
+  private final String VALID_EMAIL = "valid@email.com";
+  private final String VALID_BIRTHDATE = "2025-10-28";
+  private final Gender VALID_GENDER = Gender.FEMALE;
+
   @DisplayName("User 객체 생성 테스트")
   @Nested
   class Create {
 
-    private final String VALID_USER_ID = "validId10";
-    private final String VALID_EMAIL = "valid@email.com";
-    private final String VALID_BIRTHDATE = "2025-10-28";
-    private final Gender VALID_GENDER = Gender.FEMALE;
+
 
     @DisplayName("모든 값이 유효하면 User 객체 생성에 성공한다.")
     @Test
     void create_user_with_valid_data() {
       // assert
       assertDoesNotThrow(() -> {
-        new User(VALID_USER_ID, VALID_EMAIL, VALID_BIRTHDATE, VALID_GENDER);
+        createUser(VALID_USER_ID, VALID_EMAIL, VALID_BIRTHDATE, VALID_GENDER);
       });
     }
 
@@ -58,7 +60,7 @@ class UserTest {
       private void assertUserIdCreationFails(String invalidUserId) {
         // act
         CoreException result = assertThrows(CoreException.class, () -> {
-          new User(invalidUserId, VALID_EMAIL, VALID_BIRTHDATE, VALID_GENDER);
+          createUser(invalidUserId, VALID_EMAIL, VALID_BIRTHDATE, VALID_GENDER);
         });
 
         // assert
@@ -95,7 +97,7 @@ class UserTest {
       private void assertEmailCreationFails(String invalidEmail) {
         // act
         CoreException result = assertThrows(CoreException.class, () -> {
-          new User(VALID_USER_ID, invalidEmail, VALID_BIRTHDATE, VALID_GENDER);
+          createUser(VALID_USER_ID, invalidEmail, VALID_BIRTHDATE, VALID_GENDER);
         });
 
         // assert
@@ -110,7 +112,7 @@ class UserTest {
       private void assertBirthdateCreationFails(String invalidBirthdate) {
         // act
         CoreException result = assertThrows(CoreException.class, () -> {
-          new User(VALID_USER_ID, VALID_EMAIL, invalidBirthdate, VALID_GENDER);
+          createUser(VALID_USER_ID, VALID_EMAIL, invalidBirthdate, VALID_GENDER);
         });
 
         // assert
@@ -135,7 +137,58 @@ class UserTest {
         assertBirthdateCreationFails("");
       }
     }
+  }
 
+  @DisplayName("포인트 충전 테스트")
+  @Nested
+  class ChargePoint {
+
+    @DisplayName("0으로 포인트를 충전 시 실패한다.")
+    @Test
+    void throwsBadRequest_whenChargeAmountIsZero() {
+      assertChargePointFails(0);
+    }
+
+    @DisplayName("음수 금액으로 충전 시 실패한다 (BAD_REQUEST 예외 발생).")
+    @Test
+    void throwsBadRequest_whenChargeAmountIsNegative() {
+      assertChargePointFails(-100);
+    }
+
+    @DisplayName("양수 금액으로 충전 시 성공한다.")
+    @Test
+    void chargePoint_with_positive_amount() {
+      // arrange
+      User user = createUser(VALID_USER_ID, VALID_EMAIL, VALID_BIRTHDATE, VALID_GENDER);
+      int chargeAmount = 100;
+      int expectedPoint = 100;
+
+      // act
+      user.chargePoint(chargeAmount);
+
+      // assert
+      assertEquals(expectedPoint, user.getPoint());
+    }
+
+    private void assertChargePointFails(int invalidAmount) {
+      // arrange
+      User user = createUser(VALID_USER_ID, VALID_EMAIL, VALID_BIRTHDATE, VALID_GENDER);
+      int initialPoint = user.getPoint();
+
+      // act
+      CoreException exception = assertThrows(CoreException.class, () -> {
+        user.chargePoint(invalidAmount);
+      });
+
+      // assert
+      assertEquals(ErrorType.BAD_REQUEST, exception.getErrorType());
+      assertEquals(initialPoint, user.getPoint());
+    }
+  }
+
+  private User createUser(String userId, String email, String birthdate,
+      Gender gender) {
+    return new User(userId, email, birthdate, gender);
   }
 
 }
