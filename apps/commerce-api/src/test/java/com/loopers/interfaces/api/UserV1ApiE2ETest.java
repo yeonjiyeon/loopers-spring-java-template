@@ -2,10 +2,7 @@ package com.loopers.interfaces.api;
 
 import com.loopers.interfaces.api.user.UserV1Dto;
 import com.loopers.utils.DatabaseCleanUp;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -90,5 +87,62 @@ public class UserV1ApiE2ETest {
             assertThat(response.getStatusCode().value()).isEqualTo(400);
         }
 
+    }
+
+    @DisplayName("GET /api/v1/users/{userId}")
+    @Nested
+    class Get {
+        private final String validUserId = "user123";
+        private final String validEmail = "xx@yy.zz";
+        private final String validBirthday = "1993-03-13";
+        private final String validGender = "male";
+
+        // 회원가입 정보 작성
+        @BeforeEach
+        void setupUser() {
+            UserV1Dto.UserRegisterRequest request = new UserV1Dto.UserRegisterRequest(
+                    validUserId,
+                    validEmail,
+                    validBirthday,
+                    validGender
+            );
+            ParameterizedTypeReference<ApiResponse<UserV1Dto.UserResponse>> responseType = new ParameterizedTypeReference<>() {
+            };
+            testRestTemplate.exchange(ENDPOINT_USER, HttpMethod.POST, new HttpEntity<>(request), responseType);
+        }
+
+        @DisplayName("내 정보 조회에 성공할 경우, 해당하는 유저 정보를 응답으로 반환한다.")
+        @Test
+        void returnUserInfo_whenGetUserInfoSuccess() {
+            // arrange: setupUser() 참조
+            // act
+            ParameterizedTypeReference<ApiResponse<UserV1Dto.UserResponse>> responseType = new ParameterizedTypeReference<>() {
+            };
+            ResponseEntity<ApiResponse<UserV1Dto.UserResponse>> response = testRestTemplate.exchange(ENDPOINT_USER + "/" + validUserId, HttpMethod.GET, null, responseType);
+
+            // assert
+            assertAll(
+                    () -> assertTrue(response.getStatusCode().is2xxSuccessful()),
+                    () -> assertThat(response.getBody().data().id()).isEqualTo("user123"),
+                    () -> assertThat(response.getBody().data().email()).isEqualTo("xx@yy.zz"),
+                    () -> assertThat(response.getBody().data().birthday()).isEqualTo("1993-03-13"),
+                    () -> assertThat(response.getBody().data().gender()).isEqualTo("male")
+            );
+        }
+
+        @DisplayName("존재하지 않는 ID 로 조회할 경우, `404 Not Found` 응답을 반환한다.")
+        @Test
+        void returnNotFound_whenUserIdDoesNotExist() {
+            // arrange
+            String invalidUserId = "nonexist";
+
+            // act
+            ParameterizedTypeReference<ApiResponse<UserV1Dto.UserResponse>> responseType = new ParameterizedTypeReference<>() {
+            };
+            ResponseEntity<ApiResponse<UserV1Dto.UserResponse>> response = testRestTemplate.exchange(ENDPOINT_USER + "/" + invalidUserId, HttpMethod.GET, null, responseType);
+
+            // assert
+            assertThat(response.getStatusCode().value()).isEqualTo(404);
+        }
     }
 }

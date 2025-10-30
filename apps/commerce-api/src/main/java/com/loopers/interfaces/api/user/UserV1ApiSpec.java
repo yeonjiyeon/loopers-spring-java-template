@@ -20,4 +20,18 @@ public interface UserV1ApiSpec {
             )
             UserV1Dto.UserRegisterRequest request
     );
+
+    @Operation(
+            method = "GET",
+            summary = "내 정보 조회",
+            description = "회원 정보를 조회합니다."
+    )
+    ApiResponse<UserV1Dto.UserResponse> getUserInfo(
+            @Schema(
+                    name = "회원 ID",
+                    description = "조회할 회원의 ID"
+            )
+            String userId
+    );
+
 }

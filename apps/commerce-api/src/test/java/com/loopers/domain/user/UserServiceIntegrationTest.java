@@ -67,4 +67,43 @@ public class UserServiceIntegrationTest {
         assertThat(result.getMessage()).isEqualTo("이미 존재하는 사용자 ID 입니다.");
     }
 
+    @DisplayName("해당 ID 의 회원이 존재할 경우, 회원 정보가 반환된다.")
+    @Test
+    void returnsUserInfo_whenUserExists() {
+        // arrange
+        String validId = "user123";
+        String validEmail = "xx@yy.zz";
+        String validBirthday = "1993-03-13";
+        String validGender = "male";
+        // 기존 유저 등록
+        userService.registerUser(validId, validEmail, validBirthday, validGender);
+
+        // act
+        Optional<User> foundUser = userService.findByUserId(validId);
+
+        // assert
+        assertThat(foundUser).isPresent();
+        assertThat(foundUser.get().getUserId()).isEqualTo("user123");
+    }
+
+    @DisplayName("해당 ID 의 회원이 존재하지 않을 경우, null 이 반환된다.")
+    @Test
+    void returnsNull_whenUserDoesNotExist() {
+        // arrange
+        String validId = "user123";
+        String validEmail = "xx@yy.zz";
+        String validBirthday = "1993-03-13";
+        String validGender = "male";
+        // 기존 유저 등록
+        userService.registerUser(validId, validEmail, validBirthday, validGender);
+        String nonExistId = "nonexist";
+
+
+        // act
+        Optional<User> foundUser = userService.findByUserId(nonExistId);
+
+        // assert
+        assertThat(foundUser).isNotPresent();
+    }
+
 }

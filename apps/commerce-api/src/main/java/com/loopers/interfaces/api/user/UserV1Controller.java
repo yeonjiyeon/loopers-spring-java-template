@@ -24,4 +24,12 @@ public class UserV1Controller implements UserV1ApiSpec {
         UserV1Dto.UserResponse response = UserV1Dto.UserResponse.from(info);
         return ApiResponse.success(response);
     }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/{userId}")
+    @Override
+    public ApiResponse<UserV1Dto.UserResponse> getUserInfo(@PathVariable String userId) {
+        UserInfo info = userFacade.getUserInfo(userId);
+        UserV1Dto.UserResponse response = UserV1Dto.UserResponse.from(info);
+        return ApiResponse.success(response);
+    }
 }
