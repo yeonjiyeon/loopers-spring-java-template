@@ -32,6 +32,11 @@ public class UserServiceIntegrationTest {
   @Autowired
   private DatabaseCleanUp databaseCleanUp;
 
+  private final String VALID_USER_ID = "validId10";
+  private final String VALID_EMAIL = "valid@email.com";
+  private final String VALID_BIRTHDATE = "2025-10-28";
+  private final Gender VALID_GENDER = Gender.FEMALE;
+
   @AfterEach
   void tearDown() {
     databaseCleanUp.truncateAllTables();
@@ -39,12 +44,7 @@ public class UserServiceIntegrationTest {
 
   @DisplayName("회원 가입을 할 때,")
   @Nested
-  class UserCreationCommand {
-
-    private final String VALID_USER_ID = "validId10";
-    private final String VALID_EMAIL = "valid@email.com";
-    private final String VALID_BIRTHDATE = "2025-10-28";
-    private final Gender VALID_GENDER = Gender.FEMALE;
+  class Create {
 
     @DisplayName("회원 가입시 User 저장이 수행된다.( spy 검증 )")
     @Test
@@ -86,7 +86,11 @@ public class UserServiceIntegrationTest {
       // assert
       assertEquals("이미 가입된 ID입니다.", exception.getMessage());
     }
+  }
 
+  @DisplayName("회원 조회 할 때,")
+  @Nested
+  class Get {
 
     @DisplayName("해당 ID 의 회원이 존재할 경우, 회원 정보가 반환된다")
     @Test
@@ -121,6 +125,6 @@ public class UserServiceIntegrationTest {
       // assert
       assertNull(result);
     }
-
   }
+
 }

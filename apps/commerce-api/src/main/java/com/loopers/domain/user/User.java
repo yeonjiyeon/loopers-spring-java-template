@@ -65,6 +65,14 @@ public class User {
     this.point = 0;
   }
 
+  public User(String userId, String email, String birthdate, Gender gender, int point) {
+    this.userId = userId;
+    this.email = email;
+    this.birthdate = birthdate;
+    this.gender = gender;
+    this.point = point;
+  }
+
   public String getUserId() {
     return userId;
   }
@@ -79,5 +87,8 @@ public class User {
 
   public Gender getGender() {
     return gender;
+  }
+  public int getPoint() {
+    return point;
   }
 }
