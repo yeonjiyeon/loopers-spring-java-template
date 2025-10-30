@@ -9,20 +9,23 @@ public class UserV1Dto {
   public record SignUpRequest(
       @NotNull String userId,
       @NotNull String email,
-      @NotNull String birthDate
+      @NotNull String birthDate,
+      @NotNull User.Gender gender
+
   ) {
     public UserCreationCommand toCommand() {
-      return new UserCreationCommand(userId, email, birthDate);
+      return new UserCreationCommand(userId, email, birthDate, gender);
     }
   }
 
-  public record UserResponse(String userId, String email, String birthDate) {
+  public record UserResponse(String userId, String email, String birthDate, User.Gender gender) {
 
     public static UserV1Dto.UserResponse from(User user) {
       return new UserV1Dto.UserResponse(
           user.getUserId(),
           user.getEmail(),
-          user.getBirthdate()
+          user.getBirthdate(),
+          user.getGender()
       );
     }
   }

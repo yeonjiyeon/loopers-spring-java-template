@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import com.loopers.domain.user.User.Gender;
 import com.loopers.interfaces.api.user.UserV1Dto.UserResponse;
 import com.loopers.utils.DatabaseCleanUp;
 import org.junit.jupiter.api.AfterEach;
@@ -44,7 +45,7 @@ public class UserServiceIntegrationTest {
     void savesUser_whenSignUpIsSuccessful() {
 
       UserCommand.UserCreationCommand creationCommand = new UserCommand.UserCreationCommand(
-          "validId10", "valid@email.com", "2025-10-28");
+          "validId10", "valid@email.com", "2025-10-28", Gender.FEMALE);
 
       //act
       UserResponse result = userService.signUp(creationCommand);
@@ -64,13 +65,13 @@ public class UserServiceIntegrationTest {
     void throwsException_whenInvalidIdIsProvided() {
       // arrange
       String duplicateId = "dupliId";
-      User existingUser = new User(duplicateId, "original@email.com", "2000-01-01");
+      User existingUser = new User(duplicateId, "original@email.com", "2000-01-01", Gender.FEMALE);
 
       // act
       userRepository.save(existingUser);
 
       UserCommand.UserCreationCommand duplicateCommand = new UserCommand.UserCreationCommand(
-          duplicateId, "new@email.com", "2001-01-01");
+          duplicateId, "new@email.com", "2001-01-01", Gender.FEMALE);
 
 
       IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {

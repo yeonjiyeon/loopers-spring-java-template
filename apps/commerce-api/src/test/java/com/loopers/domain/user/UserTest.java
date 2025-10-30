@@ -3,6 +3,7 @@ package com.loopers.domain.user;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.loopers.domain.user.User.Gender;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import org.junit.jupiter.api.DisplayName;
@@ -18,13 +19,14 @@ class UserTest {
     private final String VALID_USER_ID = "validId10";
     private final String VALID_EMAIL = "valid@email.com";
     private final String VALID_BIRTHDATE = "2025-10-28";
+    private final Gender VALID_GENDER = Gender.FEMALE;
 
     @DisplayName("모든 값이 유효하면 User 객체 생성에 성공한다.")
     @Test
     void create_user_with_valid_data() {
       // assert
       assertDoesNotThrow(() -> {
-        new User(VALID_USER_ID, VALID_EMAIL, VALID_BIRTHDATE);
+        new User(VALID_USER_ID, VALID_EMAIL, VALID_BIRTHDATE, VALID_GENDER);
       });
     }
 
@@ -56,7 +58,7 @@ class UserTest {
       private void assertUserIdCreationFails(String invalidUserId) {
         // act
         CoreException result = assertThrows(CoreException.class, () -> {
-          new User(invalidUserId, VALID_EMAIL, VALID_BIRTHDATE);
+          new User(invalidUserId, VALID_EMAIL, VALID_BIRTHDATE, VALID_GENDER);
         });
 
         // assert
@@ -93,7 +95,7 @@ class UserTest {
       private void assertEmailCreationFails(String invalidEmail) {
         // act
         CoreException result = assertThrows(CoreException.class, () -> {
-          new User(VALID_USER_ID, invalidEmail, VALID_BIRTHDATE);
+          new User(VALID_USER_ID, invalidEmail, VALID_BIRTHDATE, VALID_GENDER);
         });
 
         // assert
@@ -105,11 +107,10 @@ class UserTest {
     @Nested
     class BirthdateValidation {
 
-      // [오류 수정] 3-argument 생성자를 사용하도록 헬퍼 메서드 추가
       private void assertBirthdateCreationFails(String invalidBirthdate) {
         // act
         CoreException result = assertThrows(CoreException.class, () -> {
-          new User(VALID_USER_ID, VALID_EMAIL, invalidBirthdate);
+          new User(VALID_USER_ID, VALID_EMAIL, invalidBirthdate, VALID_GENDER);
         });
 
         // assert
