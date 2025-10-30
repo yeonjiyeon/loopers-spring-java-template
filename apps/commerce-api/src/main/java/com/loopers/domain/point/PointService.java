@@ -2,6 +2,8 @@ package com.loopers.domain.point;
 
 import com.loopers.domain.user.User;
 import com.loopers.domain.user.UserRepository;
+import com.loopers.support.error.CoreException;
+import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,4 +19,10 @@ public class PointService {
         .orElse(null);
   }
 
+  public void charge(String userId, int amount) {
+    User user = userRepository.findByUserId(userId)
+        .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "유저를 찾을 수 없습니다."));
+
+    user.chargePoint(amount);
+  }
 }

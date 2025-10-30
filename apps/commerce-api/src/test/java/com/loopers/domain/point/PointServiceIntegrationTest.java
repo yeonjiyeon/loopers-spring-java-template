@@ -1,13 +1,17 @@
 package com.loopers.domain.point;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.loopers.domain.user.User;
 import com.loopers.domain.user.User.Gender;
 import com.loopers.domain.user.UserRepository;
+import com.loopers.support.error.CoreException;
+import com.loopers.support.error.ErrorType;
 import com.loopers.utils.DatabaseCleanUp;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -50,7 +54,8 @@ public class PointServiceIntegrationTest {
       // arrange
       String findId = "findId";
       int expectedPoint = 10;
-      User existingUser = new User(findId, VALID_EMAIL, VALID_BIRTHDATE, VALID_GENDER, expectedPoint);
+      User existingUser = new User(findId, VALID_EMAIL, VALID_BIRTHDATE, VALID_GENDER,
+          expectedPoint);
 
       // act
       userRepository.save(existingUser);
@@ -78,50 +83,25 @@ public class PointServiceIntegrationTest {
     }
   }
 
-//  @DisplayName("회원 가입을 할 때,")
-//  @Nested
-//  class Create {
-//
-//    @DisplayName("회원 가입시 User 저장이 수행된다.( spy 검증 )")
-//    @Test
-//    void savesUser_whenSignUpIsSuccessful() {
-//
-//      UserCommand.UserCreationCommand creationCommand = new UserCommand.UserCreationCommand(
-//          VALID_USER_ID, VALID_EMAIL, VALID_BIRTHDATE, VALID_GENDER);
-//
-//      //act
-//      UserResponse result = userService.signUp(creationCommand);
-//
-//      // assert
-//      assertAll(
-//          () -> verify(userRepository, times(1)).save(any(User.class)),
-//          () -> assertNotNull(result),
-//          () -> assertEquals(creationCommand.userId(), result.userId()),
-//          () -> assertEquals(creationCommand.email(), result.email()),
-//          () -> assertEquals(creationCommand.birthDate(), result.birthDate())
-//      );
-//    }
-//
-//    @DisplayName("이미 가입된 ID 로 회원가입 시도 시, 실패한다")
-//    @Test
-//    void throwsException_whenInvalidIdIsProvided() {
-//      // arrange
-//      String duplicateId = "dupliId";
-//      User existingUser = new User(duplicateId, VALID_EMAIL, VALID_BIRTHDATE, VALID_GENDER);
-//
-//      // act
-//      userRepository.save(existingUser);
-//
-//      UserCommand.UserCreationCommand duplicateCommand = new UserCommand.UserCreationCommand(
-//          duplicateId, "new@email.com", "2001-01-01", Gender.MALE);
-//
-//      IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-//        userService.signUp(duplicateCommand);
-//      });
-//
-//      // assert
-//      assertEquals("이미 가입된 ID입니다.", exception.getMessage());
-//    }
-//  }
+  @DisplayName("포인트 충전을 할 때,")
+  @Nested
+  class chargePoint {
+
+    @DisplayName("존재하지 않는 유저 ID 로 충전을 시도한 경우, 실패한다.")
+    @Test
+    void charge_not_point_whenInvalidIdIsProvided() {
+
+      String invalidId = "non-existent-user-id";
+      int chargeAmount = 100;
+
+      //act
+      CoreException exception = assertThrows(CoreException.class, () -> {
+        pointService.charge(invalidId, chargeAmount);
+      });
+
+      // assert
+      assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
+    }
+  }
 
 }
