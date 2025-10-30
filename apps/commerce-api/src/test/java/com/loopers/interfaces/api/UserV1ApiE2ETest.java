@@ -50,7 +50,8 @@ public class UserV1ApiE2ETest {
             UserV1Dto.UserRegisterRequest request = new UserV1Dto.UserRegisterRequest(
                     "user123",
                     "xx@yy.zz",
-                    "1993-03-13"
+                    "1993-03-13",
+                    "male"
             );
 
             // act
@@ -63,8 +64,30 @@ public class UserV1ApiE2ETest {
                     () -> assertTrue(response.getStatusCode().is2xxSuccessful()),
                     () -> assertThat(response.getBody().data().id()).isEqualTo(request.id()),
                     () -> assertThat(response.getBody().data().email()).isEqualTo(request.email()),
-                    () -> assertThat(response.getBody().data().birthday()).isEqualTo(request.birthday())
+                    () -> assertThat(response.getBody().data().birthday()).isEqualTo(request.birthday()),
+                    () -> assertThat(response.getBody().data().gender()).isEqualTo(request.gender())
             );
+        }
+
+        // 회원 가입 시에 성별이 없을 경우, `400 Bad Request` 응답을 반환한다.
+        @DisplayName("회원 가입 시에 성별이 없을 경우, `400 Bad Request` 응답을 반환한다.")
+        @Test
+        void returnBadRequest_whenGenderIsMissing() {
+            // arrange
+            UserV1Dto.UserRegisterRequest request = new UserV1Dto.UserRegisterRequest(
+                    "user123",
+                    "xx@yy.zz",
+                    "1993-03-13",
+                    null
+            );
+
+            // act
+            ParameterizedTypeReference<ApiResponse<UserV1Dto.UserResponse>> responseType = new ParameterizedTypeReference<>() {
+            };
+            ResponseEntity<ApiResponse<UserV1Dto.UserResponse>> response = testRestTemplate.exchange(ENDPOINT_USER, HttpMethod.POST, new HttpEntity<>(request), responseType);
+
+            // assert
+            assertThat(response.getStatusCode().value()).isEqualTo(400);
         }
 
     }

@@ -31,10 +31,11 @@ public class UserServiceIntegrationTest {
         String validId = "user123";
         String validEmail = "xx@yy.zz";
         String validBirthday = "1993-03-13";
+        String validGender = "male";
 
         // act
         // 유저 등록
-        userService.registerUser(validId, validEmail, validBirthday);
+        userService.registerUser(validId, validEmail, validBirthday, validGender);
         // 저장된 유저 조회
         Optional<User> foundUser = userService.findByUserId(validId);
 
@@ -52,15 +53,14 @@ public class UserServiceIntegrationTest {
         String validId = "user123";
         String validEmail = "xx@yy.zz";
         String validBirthday = "1993-03-13";
-        String validOtherEmail = "zz@cc.xx";
-        String validOtherBirthday = "1992-06-07";
+        String validGender = "male";
 
         // act
         // 기존 유저 등록
-        userService.registerUser(validId, validEmail, validBirthday);
+        userService.registerUser(validId, validEmail, validBirthday, validGender);
         // 동일 ID 로 유저 등록 시도
         CoreException result = assertThrows(CoreException.class, () -> {
-            userService.registerUser(validId, validOtherEmail, validOtherBirthday);
+            userService.registerUser(validId, "zz@cc.xx", "1992-06-07", "female");
         });
 
         // assert

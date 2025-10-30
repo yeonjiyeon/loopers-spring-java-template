@@ -15,6 +15,7 @@ public class UserModelTest {
         private final String validId = "user123";
         private final String validEmail = "xx@yy.zz";
         private final String validBirthday = "1993-03-13";
+        private final String validGender = "male";
 
         // ID 가 영문 및 숫자 10자 이내 형식에 맞지 않으면, User 객체 생성에 실패한다.
 
@@ -26,7 +27,7 @@ public class UserModelTest {
 
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                User.create(invalidId, validEmail, validBirthday);
+                User.create(invalidId, validEmail, validBirthday, validGender);
             });
 
             // assert
@@ -41,7 +42,7 @@ public class UserModelTest {
 
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                User.create(invalidId, validEmail, validBirthday);
+                User.create(invalidId, validEmail, validBirthday, validGender);
             });
 
             // assert
@@ -56,7 +57,7 @@ public class UserModelTest {
 
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                User.create(invalidId, validEmail, validBirthday);
+                User.create(invalidId, validEmail, validBirthday, validGender);
             });
 
             // assert
@@ -77,7 +78,7 @@ public class UserModelTest {
 
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                User.create(validId, invalidEmail, validBirthday);
+                User.create(validId, invalidEmail, validBirthday, validGender);
             });
 
             // assert
@@ -92,7 +93,7 @@ public class UserModelTest {
 
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                User.create(validId, invalidEmail, validBirthday);
+                User.create(validId, invalidEmail, validBirthday, validGender);
             });
 
             // assert
@@ -107,7 +108,7 @@ public class UserModelTest {
 
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                User.create(validId, invalidEmail, validBirthday);
+                User.create(validId, invalidEmail, validBirthday, validGender);
             });
 
             // assert
@@ -122,7 +123,7 @@ public class UserModelTest {
 
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                User.create(validId, invalidEmail, validBirthday);
+                User.create(validId, invalidEmail, validBirthday, validGender);
             });
 
             // assert
@@ -137,7 +138,7 @@ public class UserModelTest {
 
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                User.create(validId, invalidEmail, validBirthday);
+                User.create(validId, invalidEmail, validBirthday, validGender);
             });
 
             // assert
@@ -157,7 +158,7 @@ public class UserModelTest {
 
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                User.create(validId, validEmail, invalidBirthday);
+                User.create(validId, validEmail, invalidBirthday, validGender);
             });
 
             // assert
@@ -172,7 +173,7 @@ public class UserModelTest {
 
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                User.create(validId, validEmail, invalidBirthday);
+                User.create(validId, validEmail, invalidBirthday, validGender);
             });
 
             // assert
@@ -187,7 +188,7 @@ public class UserModelTest {
 
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                User.create(validId, validEmail, invalidBirthday);
+                User.create(validId, validEmail, invalidBirthday, validGender);
             });
 
             // assert
@@ -202,7 +203,7 @@ public class UserModelTest {
 
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                User.create(validId, validEmail, invalidBirthday);
+                User.create(validId, validEmail, invalidBirthday, validGender);
             });
 
             // assert
@@ -217,7 +218,7 @@ public class UserModelTest {
 
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                User.create(validId, validEmail, invalidBirthday);
+                User.create(validId, validEmail, invalidBirthday, validGender);
             });
 
             // assert
@@ -232,7 +233,7 @@ public class UserModelTest {
 
             // act
             CoreException result = assertThrows(CoreException.class, () -> {
-                User.create(validId, validEmail, invalidBirthday);
+                User.create(validId, validEmail, invalidBirthday, validGender);
             });
 
             // assert

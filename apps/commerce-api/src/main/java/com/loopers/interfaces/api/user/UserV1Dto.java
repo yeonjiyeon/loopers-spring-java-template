@@ -6,12 +6,14 @@ public class UserV1Dto {
     public record UserResponse(
             String id,
             String email,
-            String birthday) {
+            String birthday,
+            String gender) {
         public static UserResponse from(UserInfo info) {
             return new UserResponse(
                     info.id(),
                     info.email(),
-                    info.birthday()
+                    info.birthday(),
+                    info.gender()
             );
         }
     }
@@ -19,6 +21,7 @@ public class UserV1Dto {
     public record UserRegisterRequest(
             String id,
             String email,
-            String birthday) {
+            String birthday,
+            String gender) {
     }
 }

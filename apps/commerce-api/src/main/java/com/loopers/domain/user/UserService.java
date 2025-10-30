@@ -14,12 +14,12 @@ public class UserService {
     private final UserJpaRepository userJpaRepository;
 
     @Transactional
-    public User registerUser(String userId, String email, String birthday) {
+    public User registerUser(String userId, String email, String birthday, String gender) {
         // 이미 등록된 userId 인 경우, 예외를 발생시킨다.
         if (userJpaRepository.existsUserByUserId(userId)) {
             throw new CoreException(ErrorType.CONFLICT, "이미 존재하는 사용자 ID 입니다.");
         }
-        User user = User.create(userId, email, birthday);
+        User user = User.create(userId, email, birthday, gender);
         return userJpaRepository.save(user);
     }
 
