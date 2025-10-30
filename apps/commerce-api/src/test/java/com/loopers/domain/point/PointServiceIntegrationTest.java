@@ -76,9 +76,7 @@ class PointServiceIntegrationTest {
         void throwsChargeAmountFailException_whenUserIDIsNotProvided() {
             String id = "yh45g";
 
-            CoreException exception = assertThrows(CoreException.class, () -> {
-                pointService.chargePoint(id, 1000L);
-            });
+            CoreException exception = assertThrows(CoreException.class, () -> pointService.chargePoint(id, 1000L));
 
             assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
         }
