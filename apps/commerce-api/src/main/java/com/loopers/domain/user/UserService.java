@@ -20,4 +20,8 @@ public class UserService {
     User user = userRepository.save(command.toUser());
     return UserResponse.from(user);
   }
+
+  public User getUser(String userId) {
+    return userRepository.findByUserId(userId).orElse(null);
+  }
 }

@@ -3,6 +3,7 @@ package com.loopers.domain.user;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -40,12 +41,17 @@ public class UserServiceIntegrationTest {
   @Nested
   class UserCreationCommand {
 
+    private final String VALID_USER_ID = "validId10";
+    private final String VALID_EMAIL = "valid@email.com";
+    private final String VALID_BIRTHDATE = "2025-10-28";
+    private final Gender VALID_GENDER = Gender.FEMALE;
+
     @DisplayName("회원 가입시 User 저장이 수행된다.( spy 검증 )")
     @Test
     void savesUser_whenSignUpIsSuccessful() {
 
       UserCommand.UserCreationCommand creationCommand = new UserCommand.UserCreationCommand(
-          "validId10", "valid@email.com", "2025-10-28", Gender.FEMALE);
+          VALID_USER_ID, VALID_EMAIL, VALID_BIRTHDATE, VALID_GENDER);
 
       //act
       UserResponse result = userService.signUp(creationCommand);
@@ -65,25 +71,56 @@ public class UserServiceIntegrationTest {
     void throwsException_whenInvalidIdIsProvided() {
       // arrange
       String duplicateId = "dupliId";
-      User existingUser = new User(duplicateId, "original@email.com", "2000-01-01", Gender.FEMALE);
+      User existingUser = new User(duplicateId, VALID_EMAIL, VALID_BIRTHDATE, VALID_GENDER);
 
       // act
       userRepository.save(existingUser);
 
       UserCommand.UserCreationCommand duplicateCommand = new UserCommand.UserCreationCommand(
-          duplicateId, "new@email.com", "2001-01-01", Gender.FEMALE);
-
+          duplicateId, "new@email.com", "2001-01-01", Gender.MALE);
 
       IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
         userService.signUp(duplicateCommand);
       });
 
-
       // assert
       assertEquals("이미 가입된 ID입니다.", exception.getMessage());
-
-
     }
-  }
 
+
+    @DisplayName("해당 ID 의 회원이 존재할 경우, 회원 정보가 반환된다")
+    @Test
+    void return_userInfo_whenValidIdIsProvided() {
+      // arrange
+      String findId = "findId";
+      User existingUser = new User(findId, VALID_EMAIL, VALID_BIRTHDATE, VALID_GENDER);
+
+      // act
+      userRepository.save(existingUser);
+
+      User result = userService.getUser(findId);
+
+      // assert
+      assertAll(
+          () -> assertNotNull(result),
+          () -> assertEquals(findId, result.getUserId()),
+          () -> assertEquals(VALID_EMAIL, result.getEmail()),
+          () -> assertEquals(VALID_BIRTHDATE, result.getBirthdate())
+      );
+    }
+
+    @DisplayName("해당 ID 의 회원이 존재하지 않을 경우, null 이 반환된다.")
+    @Test
+    void returnsNull_whenUserNotFound() {
+      // arrange
+      String nonExistingId = "nonExistingId";
+
+      // act
+      User result = userService.getUser(nonExistingId);
+
+      // assert
+      assertNull(result);
+    }
+
+  }
 }
