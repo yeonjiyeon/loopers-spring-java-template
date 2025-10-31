@@ -36,6 +36,7 @@ class UserServiceIntegrationTest {
         @DisplayName("회원 가입시 User 저장이 수행된다.")
         @Test
         void save_whenUserRegister() {
+            //given
             String userId = "yh45g";
             String email = "yh45g@loopers.com";
             String brith = "1994-12-05";
@@ -43,21 +44,27 @@ class UserServiceIntegrationTest {
 
             UserRepository userRepositorySpy = spy(userRepository);
             UserService userServiceSpy = new UserService(userRepositorySpy);
+
+            //when
             userServiceSpy.register(userId, email, brith, gender);
 
+            //then
             verify(userRepositorySpy).save(any(User.class));
         }
 
         @DisplayName("이미 가입된 ID 로 회원가입 시도 시, 실패한다.")
         @Test
         void throwsException_whenDuplicateUserId() {
+            //given
             String userId = "yh45g";
             String email = "yh45g@loopers.com";
             String brith = "1994-12-05";
             String gender = "Male";
 
+            //when
             userService.register(userId, email, brith, gender);
 
+            //then
             Assertions.assertThrows(CoreException.class, ()
                     -> userService.register(userId, email, brith, gender));
         }
@@ -70,15 +77,17 @@ class UserServiceIntegrationTest {
         @DisplayName("해당 ID 의 회원이 존재할 경우, 회원 정보가 반환된다.")
         @Test
         void returnsUser_whenValidIdIsProvided() {
+            //given
             String userId = "yh45g";
             String email = "yh45g@loopers.com";
             String brith = "1994-12-05";
             String gender = "Male";
 
+            //when
             userService.register(userId, email, brith, gender);
-
             User user = userService.findUserByUserId(userId);
 
+            //then
             assertAll(
                     () -> assertThat(user.getUserId()).isEqualTo(userId),
                     () -> assertThat(user.getEmail()).isEqualTo(email),
@@ -90,9 +99,13 @@ class UserServiceIntegrationTest {
         @DisplayName("해당 ID 의 회원이 존재하지 않을 경우, null 이 반환된다.")
         @Test
         void returnNull_whenInvalidUserIdIsProvided() {
+            //given
             String userId = "yh45g";
+
+            //when
             User user = userService.findUserByUserId(userId);
 
+            //then
             assertThat(user).isNull();
         }
     }

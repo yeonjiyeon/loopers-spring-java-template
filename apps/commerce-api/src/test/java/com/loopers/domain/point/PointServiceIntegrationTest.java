@@ -42,6 +42,7 @@ class PointServiceIntegrationTest {
         @DisplayName("해당 ID의 회원이 존재할 경우, 보유 포인트가 반환된다.")
         @Test
         void returnPointInfo_whenValidIdIsProvided() {
+            //given
             String id = "yh45g";
             String email = "yh45g@loopers.com";
             String birth = "1994-12-05";
@@ -50,8 +51,10 @@ class PointServiceIntegrationTest {
             userRepository.save(new User(id, email, birth, gender));
             pointRepository.save(new Point(id, 0L));
 
+            //when
             Point result = pointService.findPointByUserId(id);
 
+            //then
             assertThat(result.getUserId()).isEqualTo(id);
             assertThat(result.getAmount()).isEqualTo(0L);
         }
@@ -59,10 +62,13 @@ class PointServiceIntegrationTest {
         @DisplayName("회원이 존재 하지 않을 경우, null 이 반환된다.")
         @Test
         void returnNull_whenInvalidUserIdIsProvided() {
+            //given
             String id = "yh45g";
 
+            //when
             Point point = pointService.findPointByUserId(id);
 
+            //then
             assertThat(point).isNull();
         }
     }
@@ -74,10 +80,13 @@ class PointServiceIntegrationTest {
         @DisplayName("존재하지 않는 유저 ID 로 충전을 시도한 경우, 실패한다.")
         @Test
         void throwsChargeAmountFailException_whenUserIDIsNotProvided() {
+            //given
             String id = "yh45g";
 
+            //when
             CoreException exception = assertThrows(CoreException.class, () -> pointService.chargePoint(id, 1000L));
 
+            //then
             assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
         }
     }

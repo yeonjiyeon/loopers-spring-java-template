@@ -50,6 +50,7 @@ class PointV1ControllerTest {
         @DisplayName("포인트 조회에 성공할 경우, 보유 포인트를 응답으로 반환한다.")
         @Test
         void returnPoint_whenValidUserIdIsProvided() {
+            //given
             String id = "yh45g";
             String email = "yh45g@loopers.com";
             String birth = "1994-12-05";
@@ -61,10 +62,13 @@ class PointV1ControllerTest {
 
             HttpHeaders headers = new HttpHeaders();
             headers.add("X-USER-ID", id);
+
+            //when
             ParameterizedTypeReference<ApiResponse<PointV1Dto.PointResponse>> responseType = new ParameterizedTypeReference<>() {};
             ResponseEntity<ApiResponse<PointV1Dto.PointResponse>> response =
                     testRestTemplate.exchange(GET_USER_POINT_ENDPOINT, HttpMethod.GET, new HttpEntity<>(null, headers), responseType);
 
+            //then
             assertAll(
                     () -> assertTrue(response.getStatusCode().is2xxSuccessful()),
                     () -> assertThat(response.getBody().data().userId()).isEqualTo(id),
@@ -75,14 +79,18 @@ class PointV1ControllerTest {
         @DisplayName("해당 ID의 회원이 존재하지 않을 경우, null을 반환한다.")
         @Test
         void returnNull_whenUserIdExists() {
+            //given
             String id = "yh45g";
 
             HttpHeaders headers = new HttpHeaders();
             headers.add("X-USER-ID", id);
+
+            //when
             ParameterizedTypeReference<ApiResponse<PointV1Dto.PointResponse>> responseType = new ParameterizedTypeReference<>() {};
             ResponseEntity<ApiResponse<PointV1Dto.PointResponse>> response =
                     testRestTemplate.exchange(GET_USER_POINT_ENDPOINT, HttpMethod.GET, new HttpEntity<>(null, headers), responseType);
 
+            //then
             assertAll(
                     () -> assertTrue(response.getStatusCode().is4xxClientError()),
                     () -> assertThat(response.getBody().data()).isNull()
@@ -97,6 +105,7 @@ class PointV1ControllerTest {
         @DisplayName("존재하는 유저가 1000원을 충전할 경우, 충전된 보유 총량을 응답으로 반환한다.")
         @Test
         void returnsTotalPoint_whenChargeUserPoint() {
+            //given
             String id = "yh45g";
             String email = "yh45g@loopers.com";
             String birth = "1994-12-05";
@@ -109,10 +118,13 @@ class PointV1ControllerTest {
 
             HttpHeaders headers = new HttpHeaders();
             headers.add("X-USER-ID", id);
+
+            //when
             ParameterizedTypeReference<ApiResponse<PointV1Dto.PointResponse>> responseType = new ParameterizedTypeReference<>() {};
             ResponseEntity<ApiResponse<PointV1Dto.PointResponse>> response =
                     testRestTemplate.exchange(POST_USER_POINT_ENDPOINT, HttpMethod.PATCH, new HttpEntity<>(request, headers), responseType);
 
+            //then
             assertAll(
                     () -> assertTrue(response.getStatusCode().is2xxSuccessful()),
                     () -> assertThat(response.getBody().data().userId()).isEqualTo(id),
@@ -123,14 +135,18 @@ class PointV1ControllerTest {
         @DisplayName("존재하지 않는 유저로 요청할 경우, 404 Not Found 응답을 반환한다.")
         @Test
         void throwsException_whenInvalidUserIdIsProvided() {
+            //given
             String id = "yh45g";
 
             HttpHeaders headers = new HttpHeaders();
             headers.add("X-USER-ID", id);
+
+            //when
             ParameterizedTypeReference<ApiResponse<PointV1Dto.PointResponse>> responseType = new ParameterizedTypeReference<>() {};
             ResponseEntity<ApiResponse<PointV1Dto.PointResponse>> response =
                     testRestTemplate.exchange(POST_USER_POINT_ENDPOINT, HttpMethod.PATCH, new HttpEntity<>(null, headers), responseType);
 
+            //then
             assertAll(
                     () -> assertTrue(response.getStatusCode().is4xxClientError()),
                     () -> assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND)

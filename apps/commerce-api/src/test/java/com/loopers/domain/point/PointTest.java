@@ -14,7 +14,10 @@ class PointTest {
         @DisplayName("0 이하의 정수로 포인트를 충전 시 실패한다.")
         @Test
         void throwsChargeAmountFailException_whenZeroAmountOrNegative() {
+            //given
             Point point = new Point("yh45g", 0L);
+
+            //when&then
             assertThrows(CoreException.class, () ->
                     point.charge(0L));
         }
