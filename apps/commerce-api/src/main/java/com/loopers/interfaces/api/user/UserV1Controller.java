@@ -35,7 +35,7 @@ public class UserV1Controller implements UserV1ApiSpec {
     User user = userService.getUser(userId);
 
     if(user == null) {
-      throw new CoreException(ErrorType.NOT_FOUND, "[userId = " + userId + "] 예시를 찾을 수 없습니다.");
+      throw new CoreException(ErrorType.NOT_FOUND, "유저를 찾을 수 없습니다.");
     }
     UserResponse response = UserResponse.from(user);
     return ApiResponse.success(response);

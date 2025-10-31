@@ -2,6 +2,7 @@ package com.loopers.domain.point;
 
 import com.loopers.domain.user.User;
 import com.loopers.domain.user.UserRepository;
+import com.loopers.interfaces.api.point.PointV1Dto.PointResponse;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +20,11 @@ public class PointService {
         .orElse(null);
   }
 
-  public void charge(String userId, int amount) {
+  public PointResponse charge(String userId, int amount) {
     User user = userRepository.findByUserId(userId)
         .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "유저를 찾을 수 없습니다."));
+    int chargePoint = user.chargePoint(amount);
 
-    user.chargePoint(amount);
+    return PointResponse.from(chargePoint);
   }
 }

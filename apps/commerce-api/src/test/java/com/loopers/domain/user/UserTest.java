@@ -164,10 +164,10 @@ class UserTest {
       int expectedPoint = 100;
 
       // act
-      user.chargePoint(chargeAmount);
+      int chargePoint = user.chargePoint(chargeAmount);
 
       // assert
-      assertEquals(expectedPoint, user.getPoint());
+      assertEquals(expectedPoint, chargePoint);
     }
 
     private void assertChargePointFails(int invalidAmount) {

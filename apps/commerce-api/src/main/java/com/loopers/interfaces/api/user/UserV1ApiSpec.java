@@ -17,10 +17,10 @@ public interface UserV1ApiSpec {
 
   @Operation(
       summary = "내 정보 조회",
-      description = "헤더의 ID로 내 정보를 조회합니다."
+      description = "유저의 ID로 내 정보를 조회합니다."
   )
   ApiResponse<UserV1Dto.UserResponse> getMyInfo(
-      @Schema(name = "USER-ID", description = "조회할 사용자 ID (헤더)")
+      @Schema(name = "userId-ID", description = "조회할 사용자 ID")
           String userId
   );
 
