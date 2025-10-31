@@ -13,8 +13,8 @@ public interface UserV1ApiSpec {
             description = "회원 가입을 합니다."
     )
     ApiResponse<UserV1Dto.UserResponse> register(
-        @Schema(name = "회원 가입 요청", description = "회원가입")
-        UserV1Dto.RegisterRequest request
+            @Schema(name = "회원 가입 요청", description = "회원가입")
+            UserV1Dto.RegisterRequest request
     );
 
     @Operation(
@@ -22,7 +22,7 @@ public interface UserV1ApiSpec {
             description = "해당 회원을 조회합니다."
     )
     ApiResponse<UserV1Dto.UserResponse> getUser(
-        @Schema(name = "회원 ID", description = "조회할 회원 ID")
-        String userId
+            @Schema(name = "회원 ID", description = "조회할 회원 ID")
+            String userId
     );
 }

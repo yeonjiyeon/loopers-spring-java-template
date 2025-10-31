@@ -4,6 +4,7 @@ import com.loopers.interfaces.api.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
 @Tag(name = "Point V1 API", description = "Point API 입니다.")
 public interface PointV1ApiSpec {
 

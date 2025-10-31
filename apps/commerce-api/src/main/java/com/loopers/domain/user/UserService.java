@@ -23,7 +23,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public User findUserByUserId(String userId){
+    public User findUserByUserId(String userId) {
         return userRepository.findByUserId(userId).orElse(null);
     }
 

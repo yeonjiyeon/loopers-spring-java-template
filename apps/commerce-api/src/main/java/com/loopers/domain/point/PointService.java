@@ -12,7 +12,6 @@ public class PointService {
 
     private final PointRepository pointRepository;
 
-
     @Transactional(readOnly = true)
     public Point findPointByUserId(String userId) {
         return pointRepository.findByUserId(userId).orElse(null);
@@ -20,11 +19,8 @@ public class PointService {
 
     @Transactional
     public Point chargePoint(String userId, Long chargeAmount) {
-        Point point = pointRepository.findByUserId(userId)
-                .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "포인트를 충전할수 없는 사용자입니다."));
+        Point point = pointRepository.findByUserId(userId).orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "포인트를 충전할수 없는 사용자입니다."));
         point.charge(chargeAmount);
         return pointRepository.save(point);
     }
-
-
 }

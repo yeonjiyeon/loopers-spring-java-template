@@ -37,5 +37,4 @@ public class Point extends BaseEntity {
         this.amount += chargeAmount;
         new Point(this.userId, this.amount);
     }
-
 }

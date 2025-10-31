@@ -8,7 +8,8 @@ public class UserV1Dto {
             String mail,
             String birth,
             String gender
-    ){}
+    ) {
+    }
 
     public record UserResponse(String userId, String email, String birth, String gender) {
         public static UserResponse from(UserInfo info) {
