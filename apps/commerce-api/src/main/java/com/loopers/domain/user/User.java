@@ -19,6 +19,7 @@ public class User extends BaseEntity {
     private String email;
     private String birthday;
     private String gender;
+    private Long currentPoint = 0L;
 
     private User(String userId, String email, String birthday, String gender) {
         this.userId = userId;

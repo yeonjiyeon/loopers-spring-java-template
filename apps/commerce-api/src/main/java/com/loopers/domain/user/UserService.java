@@ -27,4 +27,9 @@ public class UserService {
     public Optional<User> findByUserId(String userId) {
         return userJpaRepository.findByUserId(userId);
     }
+
+    @Transactional(readOnly = true)
+    public Optional<Long> getCurrentPoint(String userId) {
+        return findByUserId(userId).map(User::getCurrentPoint);
+    }
 }
