@@ -97,6 +97,48 @@ public class PointV1ApiE2ETest {
             // assert
             assertThat(response.getStatusCode().value()).isEqualTo(400);
         }
+
+        @DisplayName("존재하는 유저가 1000원을 충전할 경우, 충전된 보유 총량을 응답으로 반환한다.")
+        @Test
+        void returnChargedPoints_whenChargeUserPointsSuccess() {
+            // arrange: setupUser() 참조
+            String xUserIdHeader = "user123";
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("X-USER-ID", xUserIdHeader);
+            PointV1Dto.PointChargeRequest request = new PointV1Dto.PointChargeRequest(1000);
+
+            // act
+            ParameterizedTypeReference<ApiResponse<PointV1Dto.PointResponse>> responseType = new ParameterizedTypeReference<>() {
+            };
+            HttpEntity<PointV1Dto.PointChargeRequest> requestEntity = new HttpEntity<>(request, headers);
+            ResponseEntity<ApiResponse<PointV1Dto.PointResponse>> response = testRestTemplate.exchange(ENDPOINT_POINT, HttpMethod.POST, requestEntity, responseType);
+
+            // assert
+            assertAll(
+                    () -> assertTrue(response.getStatusCode().is2xxSuccessful()),
+                    () -> assertThat(response.getBody().data().currentPoint()).isEqualTo(1000L)
+            );
+        }
+
+        //존재하지 않는 유저로 요청할 경우, `404 Not Found` 응답을 반환한다.
+        @DisplayName("존재하지 않는 유저로 요청할 경우, `404 Not Found` 응답을 반환한다.")
+        @Test
+        void returnNotFound_whenChargePointsForNonExistentUser() {
+            // arrange: setupUser() 참조
+            String xUserIdHeader = "nonexist";
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("X-USER-ID", xUserIdHeader);
+            PointV1Dto.PointChargeRequest request = new PointV1Dto.PointChargeRequest(1000);
+
+            // act
+            ParameterizedTypeReference<ApiResponse<PointV1Dto.PointResponse>> responseType = new ParameterizedTypeReference<>() {
+            };
+            HttpEntity<PointV1Dto.PointChargeRequest> requestEntity = new HttpEntity<>(request, headers);
+            ResponseEntity<ApiResponse<PointV1Dto.PointResponse>> response = testRestTemplate.exchange(ENDPOINT_POINT, HttpMethod.POST, requestEntity, responseType);
+
+            // assert
+            assertThat(response.getStatusCode().value()).isEqualTo(404);
+        }
     }
 
 }

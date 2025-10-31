@@ -3,9 +3,11 @@ package com.loopers.domain.user;
 import com.loopers.domain.BaseEntity;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 @Entity
@@ -15,10 +17,12 @@ public class User extends BaseEntity {
     protected User() {
     }
 
+    @Column(nullable = false, unique = true, length = 10)
     private String userId;
     private String email;
     private String birthday;
     private String gender;
+    @Setter
     private Long currentPoint = 0L;
 
     private User(String userId, String email, String birthday, String gender) {

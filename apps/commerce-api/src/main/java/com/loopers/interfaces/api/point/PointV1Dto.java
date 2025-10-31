@@ -11,4 +11,9 @@ public class PointV1Dto {
             );
         }
     }
+
+    public record PointChargeRequest(
+            int amount
+    ) {
+    }
 }

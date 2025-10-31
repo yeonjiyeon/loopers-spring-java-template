@@ -28,6 +28,11 @@ public class UserService {
         return userJpaRepository.findByUserId(userId);
     }
 
+    // find by user id with lock for update
+    @Transactional
+    public Optional<User> findByUserIdForUpdate(String userId) {
+        return userJpaRepository.findByUserId(userId);
+    }
     @Transactional(readOnly = true)
     public Optional<Long> getCurrentPoint(String userId) {
         return findByUserId(userId).map(User::getCurrentPoint);

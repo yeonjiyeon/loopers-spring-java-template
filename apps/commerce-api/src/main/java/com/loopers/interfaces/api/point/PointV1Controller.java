@@ -7,10 +7,7 @@ import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -26,6 +23,16 @@ public class PointV1Controller implements PointV1ApiSpec {
         }
         Long currentPoint = pointFacade.getCurrentPoint(userId);
         PointV1Dto.PointResponse response = PointV1Dto.PointResponse.from(currentPoint);
+        return ApiResponse.success(response);
+    }
+
+    @RequestMapping(method = RequestMethod.POST)
+    @Override
+    public ApiResponse<PointV1Dto.PointResponse> chargeUserPoints(
+            @RequestHeader(value = "X-USER-ID", required = false) String userId,
+            @RequestBody PointV1Dto.PointChargeRequest request) {
+        Long chargedPoint = pointFacade.chargePoints(userId, request.amount());
+        PointV1Dto.PointResponse response = PointV1Dto.PointResponse.from(chargedPoint);
         return ApiResponse.success(response);
     }
 }
