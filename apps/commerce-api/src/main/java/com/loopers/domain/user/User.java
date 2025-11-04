@@ -18,7 +18,7 @@ public class User {
   private static final String EMAIL_PATTERN = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
   private static final String BIRTHDATE_PATTERN = "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$";
 
-  @Id()
+  @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   String userId;

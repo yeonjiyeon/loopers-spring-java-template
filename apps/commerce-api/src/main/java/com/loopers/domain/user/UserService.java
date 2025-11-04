@@ -16,7 +16,6 @@ public class UserService {
       throw new IllegalArgumentException("이미 가입된 ID입니다.");
     });
 
-    userRepository.findByUserId(command.userId());
     User user = userRepository.save(command.toUser());
     return UserResponse.from(user);
   }
