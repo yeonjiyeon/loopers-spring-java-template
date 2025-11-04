@@ -7,6 +7,7 @@ import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Component
@@ -20,6 +21,7 @@ public class PointService {
         .orElse(null);
   }
 
+  @Transactional
   public PointResponse charge(String userId, int amount) {
     User user = userRepository.findByUserId(userId)
         .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "유저를 찾을 수 없습니다."));
