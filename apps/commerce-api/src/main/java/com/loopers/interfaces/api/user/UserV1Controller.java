@@ -6,6 +6,7 @@ import com.loopers.interfaces.api.ApiResponse;
 import com.loopers.interfaces.api.user.UserV1Dto.UserResponse;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +24,7 @@ public class UserV1Controller implements UserV1ApiSpec {
 
   @PostMapping("")
   @Override
-  public ApiResponse<UserResponse> signUp(@RequestBody UserV1Dto.SignUpRequest request) {
+  public ApiResponse<UserResponse> signUp(@Valid @RequestBody UserV1Dto.SignUpRequest request) {
 
     UserResponse response = userService.signUp(request.toCommand());
     return ApiResponse.success(response);

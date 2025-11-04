@@ -6,6 +6,7 @@ import com.loopers.interfaces.api.point.PointV1Dto.ChargePointsRequest;
 import com.loopers.interfaces.api.point.PointV1Dto.PointResponse;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,7 +35,7 @@ public class PointV1Controller implements PointV1ApiSpec {
 
   @PostMapping()
   @Override
-  public ApiResponse<PointResponse> chargePoint(@RequestBody ChargePointsRequest request) {
+  public ApiResponse<PointResponse> chargePoint(@Valid @RequestBody ChargePointsRequest request) {
     PointResponse response = pointService.charge(request.userId(), request.point());
     return ApiResponse.success(response);
   }
