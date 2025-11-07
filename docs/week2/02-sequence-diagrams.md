@@ -284,8 +284,9 @@ sequenceDiagram
 
             OrderFacade ->> OrderService: createOrder(userId, items)
             OrderService -->> OrderFacade: OrderEntity
-
-            OrderFacade ->> ProductService: decreaseStock(productId, quantity)
+            
+            %% Atomic Update 실행UPDATE product SET stock = stock - ? WHERE id = ? AND stock >= ?
+            OrderFacade ->> ProductService: decreaseStock(productId, quantity) (Execute Atomic Updates)
             ProductService -->> OrderFacade: success
 
             OrderFacade ->> PointService: deductPoints(userId, totalPrice)
