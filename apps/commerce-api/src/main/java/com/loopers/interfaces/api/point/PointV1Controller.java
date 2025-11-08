@@ -31,6 +31,9 @@ public class PointV1Controller implements PointV1ApiSpec {
     public ApiResponse<PointV1Dto.PointResponse> chargeUserPoints(
             @RequestHeader(value = "X-USER-ID", required = false) String userId,
             @RequestBody PointV1Dto.PointChargeRequest request) {
+        if (StringUtils.isBlank(userId)) {
+            throw new CoreException(ErrorType.BAD_REQUEST);
+        }
         Long chargedPoint = pointFacade.chargePoints(userId, request.amount());
         PointV1Dto.PointResponse response = PointV1Dto.PointResponse.from(chargedPoint);
         return ApiResponse.success(response);

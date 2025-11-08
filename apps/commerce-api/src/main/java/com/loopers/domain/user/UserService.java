@@ -31,7 +31,7 @@ public class UserService {
     // find by user id with lock for update
     @Transactional
     public Optional<User> findByUserIdForUpdate(String userId) {
-        return userJpaRepository.findByUserId(userId);
+        return userJpaRepository.findByUserIdForUpdate(userId);
     }
     @Transactional(readOnly = true)
     public Optional<Long> getCurrentPoint(String userId) {

@@ -8,9 +8,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
 @Entity
 @Table(name = "point")
+@Getter
 public class Point extends BaseEntity {
     @ManyToOne
     @JoinColumn(referencedColumnName = "id", nullable = false, updatable = false)
