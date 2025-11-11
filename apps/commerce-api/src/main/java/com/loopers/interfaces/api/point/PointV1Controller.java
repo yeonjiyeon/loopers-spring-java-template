@@ -34,7 +34,7 @@ public class PointV1Controller implements PointV1ApiSpec {
         if (StringUtils.isBlank(userId)) {
             throw new CoreException(ErrorType.BAD_REQUEST);
         }
-        Long chargedPoint = pointFacade.chargePoints(userId, request.amount());
+        Long chargedPoint = pointFacade.chargePoint(userId, request.amount());
         PointV1Dto.PointResponse response = PointV1Dto.PointResponse.from(chargedPoint);
         return ApiResponse.success(response);
     }

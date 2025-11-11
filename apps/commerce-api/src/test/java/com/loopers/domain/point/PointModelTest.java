@@ -1,6 +1,5 @@
 package com.loopers.domain.point;
 
-import com.loopers.domain.user.User;
 import com.loopers.support.error.CoreException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -20,15 +19,9 @@ public class PointModelTest {
         @ValueSource(ints = {0, -10, -100})
         void throwsException_whenPointIsZeroOrNegative(int invalidPoint) {
             // arrange
-            String validId = "user123";
-            String validEmail = "xx@yy.zz";
-            String validBirthday = "1993-03-13";
-            String validGender = "male";
-
-            User user = User.create(validId, validEmail, validBirthday, validGender);
-
+            Point point = Point.create(0L);
             // act
-            CoreException result = assertThrows(CoreException.class, () -> Point.create(user, invalidPoint));
+            CoreException result = assertThrows(CoreException.class, () -> point.charge(invalidPoint));
 
             // assert
             assertThat(result.getMessage()).isEqualTo("충전 포인트는 0보다 커야 합니다.");

@@ -1,28 +1,35 @@
 package com.loopers.domain.point;
 
-import com.loopers.domain.user.User;
-import com.loopers.domain.user.UserService;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 @Service
 public class PointService {
     private final PointJpaRepository pointJpaRepository;
-    private final UserService userService;
 
     @Transactional
-    public Long chargePoint(String userId, int amount) {
-        User user = userService.findByUserIdForUpdate(userId).orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "사용자를 찾을 수 없습니다."));
-
-        Point point = Point.create(user, amount);
-
-        user.setCurrentPoint(user.getCurrentPoint() + amount);
+    public void createPoint(Long userId) {
+        Point point = Point.create(userId);
         pointJpaRepository.save(point);
+    }
 
-        return user.getCurrentPoint();
+    @Transactional
+    public Long chargePoint(Long userId, int amount) {
+        Point point = pointJpaRepository.findByUserId(userId)
+                .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "포인트 정보를 찾을 수 없습니다."));
+        point.charge(amount);
+        pointJpaRepository.save(point);
+        return point.getAmount();
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Long> getCurrentPoint(Long userId) {
+        return pointJpaRepository.findByUserId(userId).map(Point::getAmount);
     }
 }

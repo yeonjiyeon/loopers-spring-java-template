@@ -1,12 +1,10 @@
 package com.loopers.domain.point;
 
 import com.loopers.domain.BaseEntity;
-import com.loopers.domain.user.User;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 
@@ -14,24 +12,27 @@ import lombok.Getter;
 @Table(name = "point")
 @Getter
 public class Point extends BaseEntity {
-    @ManyToOne
-    @JoinColumn(referencedColumnName = "id", nullable = false, updatable = false)
-    private User user;
+    @Column(name = "user_id", nullable = false, updatable = false, unique = true)
+    private Long userId;
     private Long amount;
 
     protected Point() {
     }
 
-    private Point(User user, Long amount) {
-        this.user = user;
+    private Point(Long userId, Long amount) {
+        this.userId = userId;
         this.amount = amount;
     }
 
-    public static Point create(User user, int amount) {
+    public static Point create(Long userId) {
+        return new Point(userId, 0L);
+    }
+
+    public void charge(int amount) {
         if (amount <= 0) {
             throw new CoreException(ErrorType.BAD_REQUEST, "충전 포인트는 0보다 커야 합니다.");
         }
 
-        return new Point(user, (long) amount);
+        this.amount += amount;
     }
 }

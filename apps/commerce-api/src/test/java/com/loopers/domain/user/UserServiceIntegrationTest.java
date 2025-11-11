@@ -105,43 +105,4 @@ public class UserServiceIntegrationTest {
         // assert
         assertThat(foundUser).isNotPresent();
     }
-
-    @DisplayName("해당 ID 의 회원이 존재할 경우, 보유 포인트가 반환된다.")
-    @Test
-    void returnsUserPoints_whenUserExists() {
-        // arrange
-        String validId = "user123";
-        String validEmail = "xx@yy.zz";
-        String validBirthday = "1993-03-13";
-        String validGender = "male";
-        // 유저 등록
-        userService.registerUser(validId, validEmail, validBirthday, validGender);
-        String existingUserId = "user123";
-
-        // act
-        Optional<Long> currentPoint = userService.getCurrentPoint(existingUserId);
-
-        // assert
-        assertThat(currentPoint).isPresent();
-        assertThat(currentPoint.get()).isEqualTo(0L);
-    }
-
-    @DisplayName("해당 ID 의 회원이 존재하지 않을 경우, null 이 반환된다.")
-    @Test
-    void returnsNullPoints_whenUserDoesNotExist() {
-        // arrange
-        String validId = "user123";
-        String validEmail = "xx@yy.zz";
-        String validBirthday = "1993-03-13";
-        String validGender = "male";
-        // 유저 등록
-        userService.registerUser(validId, validEmail, validBirthday, validGender);
-        String nonExistingId = "nonexist";
-
-        // act
-        Optional<Long> currentPoint = userService.getCurrentPoint(nonExistingId);
-
-        // assert
-        assertThat(currentPoint).isNotPresent();
-    }
 }
