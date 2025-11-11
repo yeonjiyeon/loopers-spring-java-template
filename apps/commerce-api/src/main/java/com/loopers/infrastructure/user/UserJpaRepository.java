@@ -1,14 +1,13 @@
-package com.loopers.domain.user;
+package com.loopers.infrastructure.user;
 
+import com.loopers.domain.user.User;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
 public interface UserJpaRepository extends JpaRepository<User, String> {
     Optional<User> findByUserId(String userId);
 

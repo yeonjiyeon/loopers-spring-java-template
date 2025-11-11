@@ -11,25 +11,25 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class PointService {
-    private final PointJpaRepository pointJpaRepository;
+    private final PointRepository pointRepository;
 
     @Transactional
     public void createPoint(Long userId) {
         Point point = Point.create(userId);
-        pointJpaRepository.save(point);
+        pointRepository.save(point);
     }
 
     @Transactional
     public Long chargePoint(Long userId, int amount) {
-        Point point = pointJpaRepository.findByUserId(userId)
+        Point point = pointRepository.findByUserId(userId)
                 .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "포인트 정보를 찾을 수 없습니다."));
         point.charge(amount);
-        pointJpaRepository.save(point);
+        pointRepository.save(point);
         return point.getAmount();
     }
 
     @Transactional(readOnly = true)
     public Optional<Long> getCurrentPoint(Long userId) {
-        return pointJpaRepository.findByUserId(userId).map(Point::getAmount);
+        return pointRepository.findByUserId(userId).map(Point::getAmount);
     }
 }

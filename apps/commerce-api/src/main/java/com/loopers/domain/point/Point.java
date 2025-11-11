@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 
 @Entity
-@Table(name = "point")
+@Table(name = "tb_point")
 @Getter
 public class Point extends BaseEntity {
     @Column(name = "user_id", nullable = false, updatable = false, unique = true)

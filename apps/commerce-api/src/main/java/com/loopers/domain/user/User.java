@@ -10,7 +10,7 @@ import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
 @Entity
-@Table(name = "user")
+@Table(name = "tb_user")
 @Getter
 public class User extends BaseEntity {
     protected User() {

@@ -22,7 +22,7 @@ public class UserServiceIntegrationTest {
     private UserService userService;
 
     @MockitoSpyBean
-    private UserJpaRepository spyUserRepository;
+    private UserRepository spyUserRepository;
 
     @DisplayName("회원 가입시 User 저장이 수행된다.")
     @Test
