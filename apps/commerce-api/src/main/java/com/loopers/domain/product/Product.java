@@ -7,7 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "user")
+@Table(name = "product")
 public class Product extends BaseEntity {
 
   private Long brandId;
@@ -15,6 +15,9 @@ public class Product extends BaseEntity {
   private String description;
   private long price;
   private int stock;
+
+  protected Product() {
+  }
 
   public Product(Long brandId, String name, String description, long price, int stock) {
     if (brandId == null) {
@@ -44,5 +47,23 @@ public class Product extends BaseEntity {
     this.stock = stock;
   }
 
+  public Long getBrandId() {
+    return brandId;
+  }
 
+  public String getName() {
+    return name;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public long getPrice() {
+    return price;
+  }
+
+  public int getStock() {
+    return stock;
+  }
 }
