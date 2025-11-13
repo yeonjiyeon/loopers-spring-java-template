@@ -36,6 +36,10 @@ public class Order extends BaseEntity {
     this.orderItems = orderItems;
   }
 
+  public Long getUserId() {
+    return userId;
+  }
+
   public void addOrderItem(Product product, int quantity) {
 
     if (product == null) {
