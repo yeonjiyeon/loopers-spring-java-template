@@ -1,9 +1,13 @@
 package com.loopers.domain.product;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.loopers.support.error.CoreException;
+import com.loopers.support.error.ErrorType;
 import com.loopers.utils.DatabaseCleanUp;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -36,7 +40,7 @@ public class ProductServiceIntegrationTest {
 
   @DisplayName("상품 조회 할 때,")
   @Nested
-  class Get {
+  class GetList {
 
     @DisplayName("기본 정렬(최신순)로 첫 페이지 조회 시, 페이징 정보와 상세 필드(이름/설명/가격/재고)가 올바르게 반환된다.")
     @Test
@@ -78,7 +82,49 @@ public class ProductServiceIntegrationTest {
                 () -> assertEquals(1L, firstProduct.getBrandId())
             );
           }
+      );
+    }
+  }
 
+  @DisplayName("상품 상세 조회")
+  @Nested
+  class Get {
+
+    @DisplayName("존재하는 상품 ID로 조회하면 상품 상세 정보(이름, 가격, 브랜드명, 설명, 재고)가 반환된다.")
+    @Test
+    void return_productInfo_whenProductExists() {
+      // arrange
+      Product savedProduct = productRepository.save(new Product(
+          1L, "상품명", "설명", 50000, 5
+      ));
+
+      // act
+      Product result = productService.getProduct(savedProduct.getId());
+
+      // assert
+      assertAll("상품 상세 정보 검증",
+          () -> assertEquals(savedProduct.getId(), result.getId()),
+          () -> assertEquals("상품명", result.getName()),
+          () -> assertEquals("설명", result.getDescription()),
+          () -> assertEquals(50000, result.getPrice()),
+          () -> assertEquals(5, result.getStock()),
+          () -> assertEquals(1L, result.getBrandId())
+      );
+    }
+
+    @DisplayName("존재하지 않는 상품 ID로 조회 시 404 Not Found 에러와 예외 메시지를 반환한다.")
+    @Test
+    void throws_exception_whenProductNotFound() {
+      // arrange
+      long nonExistentId = 9999L;
+
+      // act & assert
+      CoreException exception = assertThrows(CoreException.class, () -> {
+        productService.getProduct(nonExistentId);
+      });
+
+      assertAll("예외 검증",
+          () -> assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_FOUND)
       );
     }
   }
