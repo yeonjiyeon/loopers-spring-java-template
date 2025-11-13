@@ -69,7 +69,7 @@ class ProductTest {
       void shouldThrowException_whenPriceIsNegative() {
         // act
         CoreException result = assertThrows(CoreException.class, () -> {
-          new Product(1L, "", "description", -1, 100);
+          new Product(1L, "name", "description", -1, 100);
         });
 
         // assert
