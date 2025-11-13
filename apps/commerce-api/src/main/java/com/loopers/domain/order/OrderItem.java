@@ -13,9 +13,11 @@ public class OrderItem extends BaseEntity {
   private Integer quantity;
   private Long price;
 
+  protected OrderItem() {
+  }
 
   public OrderItem(Product product, int quantity) {
-    if(product.getStock() < quantity){
+    if (product.getStock() < quantity) {
       throw new IllegalArgumentException("재고가 부족합니다");
     }
     this.productId = product.getId();
