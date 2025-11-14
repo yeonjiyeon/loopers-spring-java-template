@@ -28,4 +28,16 @@ public class OrderItem extends BaseEntity {
   public long calculateAmount() {
     return price * quantity;
   }
+
+  public Long getProductId() {
+    return productId;
+  }
+
+  public Integer getQuantity() {
+    return quantity;
+  }
+
+  public Long getPrice() {
+    return price;
+  }
 }

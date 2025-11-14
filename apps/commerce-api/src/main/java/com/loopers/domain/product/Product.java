@@ -66,4 +66,8 @@ public class Product extends BaseEntity {
   public int getStock() {
     return stock;
   }
+
+  public void deductStock(int requestedQty) {
+    this.stock -= requestedQty;
+  }
 }

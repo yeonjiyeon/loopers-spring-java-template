@@ -1,8 +1,11 @@
 package com.loopers.domain.product;
 
+import com.loopers.interfaces.order.OrderV1Dto.OrderItemRequest;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +29,27 @@ public class ProductService {
   public Page<Product> getProductsByBrandId(Long brandId, Pageable pageable) {
 
     return productRepository.findByBrandId(brandId, pageable);
+  }
+
+
+  public List<Product> getProducts(List<Long> productIds) {
+    return productIds.stream()
+        .map(this::getProduct)
+        .toList();
+  }
+
+  public void deductStock(List<Product> products, List<OrderItemRequest> orderItems) {
+
+    Map<Long, Integer> qtyMap = orderItems.stream()
+        .collect(Collectors.toMap(OrderItemRequest::productId, OrderItemRequest::quantity));
+
+    for (Product product : products) {
+      int requestedQty = qtyMap.get(product.getId());
+      if (product.getStock() < requestedQty) {
+        throw new CoreException(ErrorType.BAD_REQUEST, "품절된 상품입니다.");
+      }
+      product.deductStock(requestedQty);
+    }
   }
 
 }
