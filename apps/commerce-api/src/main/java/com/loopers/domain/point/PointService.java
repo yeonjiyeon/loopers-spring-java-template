@@ -29,4 +29,12 @@ public class PointService {
 
     return PointResponse.from(chargePoint);
   }
+
+  public void deductPoint(Long userId, long totalAmount) {
+    long currentPoint = userRepository.findPointById(userId);
+
+    if (currentPoint < totalAmount) {
+      throw new CoreException(ErrorType.BAD_REQUEST, "잔액이 부족합니다.");
+    }
+  }
 }
