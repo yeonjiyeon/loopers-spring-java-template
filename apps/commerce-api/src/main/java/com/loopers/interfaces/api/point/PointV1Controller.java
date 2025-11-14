@@ -1,5 +1,6 @@
 package com.loopers.interfaces.api.point;
 
+import com.loopers.domain.point.Point;
 import com.loopers.domain.point.PointService;
 import com.loopers.interfaces.api.ApiResponse;
 import com.loopers.interfaces.api.point.PointV1Dto.ChargePointsRequest;
@@ -28,7 +29,7 @@ public class PointV1Controller implements PointV1ApiSpec {
     if (userId == null || userId.isBlank()) {
       throw new CoreException(ErrorType.BAD_REQUEST, "필수 헤더인 X-USER-ID가 없거나 유효하지 않습니다.");
     }
-    Integer point = pointService.getPoint(userId);
+    Point point = pointService.getPoint(userId);
     PointResponse response = new PointResponse(point);
     return ApiResponse.success(response);
   }

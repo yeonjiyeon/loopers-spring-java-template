@@ -3,6 +3,7 @@ package com.loopers.domain.user;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.loopers.domain.point.Point;
 import com.loopers.domain.user.User.Gender;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
@@ -20,8 +21,6 @@ class UserTest {
   @DisplayName("User 객체 생성 테스트")
   @Nested
   class Create {
-
-
 
     @DisplayName("모든 값이 유효하면 User 객체 생성에 성공한다.")
     @Test
@@ -161,10 +160,10 @@ class UserTest {
       // arrange
       User user = createUser(VALID_USER_ID, VALID_EMAIL, VALID_BIRTHDATE, VALID_GENDER);
       int chargeAmount = 100;
-      int expectedPoint = 100;
+      Point expectedPoint = new Point(100);
 
       // act
-      int chargePoint = user.chargePoint(chargeAmount);
+      Point chargePoint = user.getPoint().add(chargeAmount);
 
       // assert
       assertEquals(expectedPoint, chargePoint);
@@ -173,11 +172,11 @@ class UserTest {
     private void assertChargePointFails(int invalidAmount) {
       // arrange
       User user = createUser(VALID_USER_ID, VALID_EMAIL, VALID_BIRTHDATE, VALID_GENDER);
-      int initialPoint = user.getPoint();
+      Point initialPoint = user.getPoint();
 
       // act
       CoreException exception = assertThrows(CoreException.class, () -> {
-        user.chargePoint(invalidAmount);
+        user.getPoint().add(invalidAmount);
       });
 
       // assert
