@@ -14,14 +14,13 @@ class User {
 
 class Point {
   Long id
-  Long userId
-  Long amount
+  String userId
+  Long balance
 }
 
 class Brand {
   Long id
   String name
-  String description
 }
 
 class Product {
@@ -29,7 +28,8 @@ class Product {
   Long brandId
   String name
   Long price
-  String status
+  Long likeCount;
+  Long stock
 }
 
 class Stock {
@@ -47,18 +47,19 @@ class Like {
 class Order {
   Long id
   String userId
-  String status
   Long totalPrice
+  OrderStatus status
   LocalDateTime createdAt
   List<OrderItem> orderItems
 }
 
 class OrderItem {
   Long id
-  Long orderId
+  Order order
   Long productId
-  int quantity
-  Long priceSnapshot
+  String productName
+  Long quantity
+  Long price
 }
 
 class Payment {
@@ -71,7 +72,7 @@ class Payment {
 
 %% 관계 설정
 User --> Point
-Brand --> Product 
+Brand --> Product
 Product --> Stock
 Product --> Like
 User --> Like 

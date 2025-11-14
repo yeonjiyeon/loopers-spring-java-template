@@ -1,4 +1,5 @@
-# 엔티티 다이어그램
+# erd
+
 ```mermaid
 erDiagram
     USER {
@@ -12,13 +13,12 @@ erDiagram
     POINT {
         bigint id PK
         varchar user_id FK
-        bigint amount
+        bigint balance
     }
 
     BRAND {
         bigint id PK
         varchar name
-        varchar description
     }
 
     PRODUCT {
@@ -26,12 +26,8 @@ erDiagram
         bigint brand_id FK
         varchar name
         bigint price
-        varchar status
-    }
-
-    STOCK {
-        bigint product_id PK, FK
-        int quantity
+        bigint like_count
+        bigint stock
     }
 
     LIKE {
@@ -44,8 +40,8 @@ erDiagram
     ORDERS {
         bigint id PK
         varchar user_id FK
+        bigint total_amount
         varchar status
-        bigint total_price
         datetime created_at
     }
 
@@ -53,8 +49,9 @@ erDiagram
         bigint id PK
         bigint order_id FK
         bigint product_id FK
-        int quantity
-        bigint price_snapshot
+        varchar product_name
+        bigint quantity
+        bigint price
     }
 
     PAYMENT {
@@ -65,15 +62,13 @@ erDiagram
         datetime created_at
     }
 
-    %% 관계 설정 (한글 버전)
-    USER ||--|| POINT : ""
-    BRAND ||--o{ PRODUCT : ""
-    PRODUCT ||--|| STOCK : ""
-    PRODUCT ||--o{ LIKE : ""
-    USER ||--o{ LIKE : ""
-    USER ||--o{ ORDERS : ""
-    ORDERS ||--o{ ORDER_ITEM : ""
-    ORDERS ||--|| PAYMENT : ""
-    ORDER_ITEM }o--|| PRODUCT : ""
-
+    %% 관계 (cardinality)
+    USER ||--|| POINT : "1:1"
+    BRAND ||--o{ PRODUCT : "1:N"
+    PRODUCT ||--o{ LIKE : "1:N"
+    USER ||--o{ LIKE : "1:N"
+    USER ||--o{ ORDERS : "1:N"
+    ORDERS ||--o{ ORDER_ITEM : "1:N"
+    ORDER_ITEM }o--|| PRODUCT : "N:1"
+    ORDERS ||--|| PAYMENT : "1:1"
 ```
