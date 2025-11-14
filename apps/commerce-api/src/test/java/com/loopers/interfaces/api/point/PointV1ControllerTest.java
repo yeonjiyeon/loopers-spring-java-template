@@ -58,7 +58,7 @@ class PointV1ControllerTest {
             Long amount = 1000L;
 
             userRepository.save(new User(id, email, birth, gender));
-            pointRepository.save(new Point(id, amount));
+            pointRepository.save(Point.create(id, amount));
 
             HttpHeaders headers = new HttpHeaders();
             headers.add("X-USER-ID", id);
@@ -112,7 +112,7 @@ class PointV1ControllerTest {
             String gender = "MALE";
 
             userRepository.save(new User(id, email, birth, gender));
-            pointRepository.save(new Point(id, 0L));
+            pointRepository.save(Point.create(id, 0L));
 
             PointV1Dto.ChargePointRequest request = new PointV1Dto.ChargePointRequest(id, 1000L);
 

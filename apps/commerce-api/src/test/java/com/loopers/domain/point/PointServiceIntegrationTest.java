@@ -49,14 +49,14 @@ class PointServiceIntegrationTest {
             String gender = "MALE";
 
             userRepository.save(new User(id, email, birth, gender));
-            pointRepository.save(new Point(id, 0L));
+            pointRepository.save(Point.create(id, 0L));
 
             //when
             Point result = pointService.findPointByUserId(id);
 
             //then
             assertThat(result.getUserId()).isEqualTo(id);
-            assertThat(result.getAmount()).isEqualTo(0L);
+            assertThat(result.getBalance()).isEqualTo(0L);
         }
 
         @DisplayName("회원이 존재 하지 않을 경우, null 이 반환된다.")
@@ -88,6 +88,21 @@ class PointServiceIntegrationTest {
 
             //then
             assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
+        }
+
+        @Test
+        @DisplayName("회원이 존재하면 포인트 충전 성공")
+        void chargeSuccess() {
+            // given
+            String userId = "user2";
+            userRepository.save(new User(userId, "yh45g@loopers.com", "1994-12-05", "MALE"));
+            pointRepository.save(Point.create(userId, 1000L));
+
+            // when
+            Point updated = pointService.chargePoint(userId, 500L);
+
+            // then
+            assertThat(updated.getBalance()).isEqualTo(1500L);
         }
     }
 }

@@ -20,7 +20,6 @@ public class PointRepositoryImpl implements PointRepository {
 
     @Override
     public Point save(Point point) {
-        pointJpaRepository.save(point);
-        return point;
+        return pointJpaRepository.save(point);
     }
 }

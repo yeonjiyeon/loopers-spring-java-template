@@ -6,7 +6,7 @@ public record PointInfo(String userId, Long amount) {
     public static PointInfo from(Point info) {
         return new PointInfo(
                 info.getUserId(),
-                info.getAmount()
+                info.getBalance()
         );
     }
 
