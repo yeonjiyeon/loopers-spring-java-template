@@ -55,7 +55,7 @@ class LikeServiceIntegrationTest {
       Product product = productRepository.save(new Product(1L, "상품A", "설명", 10000, 100));
 
       // act
-      Like like = likeService.createLike(new Like(user.getId(), product.getId()));
+      Like like = likeService.Like(user.getId(), product.getId());
 
       // assert
       assertAll(
@@ -73,8 +73,8 @@ class LikeServiceIntegrationTest {
       Product product = productRepository.save(new Product(1L, "상품A", "설명", 10000, 100));
 
       // act
-      Like firstLike = likeService.createLike(new Like(user.getId(), product.getId()));
-      Like secondLike = likeService.createLike(new Like(user.getId(), product.getId()));
+      Like firstLike = likeService.Like(user.getId(), product.getId());
+      Like secondLike = likeService.Like(user.getId(), product.getId());
 
       // assert
       assertAll(
@@ -96,7 +96,7 @@ class LikeServiceIntegrationTest {
       likeRepository.save(new Like(user.getId(), product.getId()));
 
       // act
-      likeService.deleteLike(user.getId(), product.getId());
+      likeService.unLike(user.getId(), product.getId());
 
       // assert
       assertThat(likeRepository.findByUserIdAndProductId(user.getId(), product.getId())).isEmpty();
@@ -110,7 +110,7 @@ class LikeServiceIntegrationTest {
       Product product = productRepository.save(new Product(1L, "상품A", "설명", 10000, 100));
 
       // act & assert
-      assertDoesNotThrow(() -> likeService.deleteLike(user.getId(), product.getId()));
+      assertDoesNotThrow(() -> likeService.unLike(user.getId(), product.getId()));
     }
   }
 }
