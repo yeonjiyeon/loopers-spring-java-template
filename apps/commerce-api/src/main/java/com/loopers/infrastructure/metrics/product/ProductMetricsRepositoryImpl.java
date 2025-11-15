@@ -3,6 +3,8 @@ package com.loopers.infrastructure.metrics.product;
 import com.loopers.domain.metrics.product.ProductMetrics;
 import com.loopers.domain.metrics.product.ProductMetricsRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
@@ -21,5 +23,10 @@ public class ProductMetricsRepositoryImpl implements ProductMetricsRepository {
     @Override
     public Collection<ProductMetrics> findByProductIds(Collection<Long> productIds) {
         return jpaRepository.findAllById(productIds);
+    }
+
+    @Override
+    public Page<ProductMetrics> findAll(Pageable pageable) {
+        return jpaRepository.findAll(pageable);
     }
 }

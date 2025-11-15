@@ -24,17 +24,7 @@ public class ProductV1Controller implements ProductV1ApiSpec {
     @RequestMapping(method = RequestMethod.GET)
     @Override
     public ApiResponse<ProductV1Dto.ProductsPageResponse> getProductList(@PageableDefault(size = 20) Pageable pageable) {
-        int page = pageable.getPageNumber();
-        int size = pageable.getPageSize();
-        String sortStr = pageable.getSort().toString().split(":")[0];
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
-        if (StringUtils.equals(sortStr, "price_asc")) {
-            sort = Sort.by(Sort.Direction.ASC, "price");
-        } else if (StringUtils.equals(sortStr, "like_desc")) {
-            sort = Sort.by(Sort.Direction.DESC, "like_count");
-        }
-
-        Page<ProductInfo> products = productFacade.getProductList(PageRequest.of(page, size, sort));
+        Page<ProductInfo> products = productFacade.getProductList(pageable);
         ProductV1Dto.ProductsPageResponse response = ProductV1Dto.ProductsPageResponse.from(products);
         return ApiResponse.success(response);
     }

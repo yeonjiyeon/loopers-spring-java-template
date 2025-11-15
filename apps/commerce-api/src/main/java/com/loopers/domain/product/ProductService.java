@@ -35,10 +35,9 @@ public class ProductService {
         int size = pageable.getPageSize();
         String sortStr = pageable.getSort().toString().split(":")[0];
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+
         if (StringUtils.startsWith(sortStr, "price_asc")) {
             sort = Sort.by(Sort.Direction.ASC, "price");
-        } else if (StringUtils.equals(sortStr, "like_desc")) {
-            sort = Sort.by(Sort.Direction.DESC, "like_count");
         }
         return productRepository.findAll(PageRequest.of(page, size, sort));
     }
