@@ -4,7 +4,6 @@ import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderItem;
 import com.loopers.domain.order.OrderService;
 import com.loopers.domain.order.OrderStatus;
-import com.loopers.domain.point.Point;
 import com.loopers.domain.point.PointService;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductService;
@@ -40,7 +39,7 @@ public class OrderFacade {
     public OrderInfo createOrder(CreateOrderCommand command) {
 
         if (command == null || command.items() == null || command.items().isEmpty()) {
-            throw new CoreException(ErrorType.NOT_FOUND, "상품 정보가 비어있습니다");
+            throw new CoreException(ErrorType.BAD_REQUEST, "상품 정보가 비어있습니다");
         }
 
         Order order = Order.create(command.userId());
@@ -71,8 +70,7 @@ public class OrderFacade {
 
         order.updateTotalAmount(totalAmount);
 
-        Point point = pointService.findPointByUserId(command.userId());
-        point.use(totalAmount);
+        pointService.usePoint(command.userId(), totalAmount);
 
         //저장
         Order saved = orderService.createOrder(order);
