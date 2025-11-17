@@ -48,9 +48,6 @@ public class Order extends BaseEntity {
     if (quantity <= 0) {
       throw new IllegalArgumentException("주문 수량은 0보다 커야 합니다");
     }
-    if (product.getStock() < quantity) {
-      throw new IllegalArgumentException("재고가 부족합니다");
-    }
 
     orderItems.add(new OrderItem(product, quantity));
 
