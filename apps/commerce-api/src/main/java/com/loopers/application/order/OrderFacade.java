@@ -10,6 +10,8 @@ import com.loopers.domain.user.User;
 import com.loopers.domain.user.UserService;
 import com.loopers.interfaces.order.OrderV1Dto.OrderItemRequest;
 import com.loopers.interfaces.order.OrderV1Dto.OrderRequest;
+import com.loopers.support.error.CoreException;
+import com.loopers.support.error.ErrorType;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -27,6 +29,11 @@ public class OrderFacade {
 
   @Transactional
   public OrderInfo placeOrder(String userId, OrderRequest request) {
+
+    if (userId == null) {
+      throw new CoreException(ErrorType.BAD_REQUEST, "사용자 ID는 필수입니다.");
+    }
+
     User user = userService.getUser(userId);
 
     List<Long> productIds = request.items().stream()
