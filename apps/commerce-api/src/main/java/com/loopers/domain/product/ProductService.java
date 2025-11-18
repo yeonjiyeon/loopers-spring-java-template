@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Component
@@ -52,4 +53,12 @@ public class ProductService {
     }
   }
 
+  @Transactional
+  public int increaseLikeCount(Product product) {
+    return product.increaseLikeCount();
+  }
+
+  public int decreaseLikeCount(Product product) {
+    return product.decreaseLikeCount();
+  }
 }
