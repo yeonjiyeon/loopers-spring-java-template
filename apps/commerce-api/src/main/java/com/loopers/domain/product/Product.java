@@ -31,7 +31,7 @@ public class Product extends BaseEntity {
 
   private int stock;
 
-  private int like_count;
+  private int likeCount;
 
 
   public Product(Long brandId, String name, String description, Money price, int stock) {
@@ -47,6 +47,9 @@ public class Product extends BaseEntity {
       throw new CoreException(ErrorType.BAD_REQUEST, "상품의 설명을 등록해야 합니다.");
     }
 
+    if (price == null) {
+      throw new CoreException(ErrorType.BAD_REQUEST, "상품의 가격을 등록해야 합니다.");
+    }
     if (stock < 0) {
       throw new CoreException(ErrorType.BAD_REQUEST, "상품의 재고는 음수가 될 수 없습니다.");
     }
@@ -78,7 +81,26 @@ public class Product extends BaseEntity {
     return stock;
   }
 
-  public void deductStock(int requestedQty) {
-    this.stock -= requestedQty;
+  public int getLikeCount() {
+    return likeCount;
   }
+
+  public void deductStock(int quantity) {
+    this.stock -= quantity;
+  }
+
+  public int increaseLikeCount() {
+    this.likeCount++;
+    return this.likeCount;
+  }
+
+  public int decreaseLikeCount() {
+    if (this.likeCount < 0) {
+      throw new CoreException(ErrorType.BAD_REQUEST, "좋아요수는 0보다 작을 수 없습니다.");
+    }
+    this.likeCount--;
+    return this.likeCount;
+
+  }
+
 }
