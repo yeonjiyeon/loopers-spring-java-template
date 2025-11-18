@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.loopers.domain.money.Money;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductRepository;
 import com.loopers.domain.user.User;
@@ -55,8 +56,8 @@ class OrderServiceIntegrationTest {
     void createOrder_whenValidProductIds_thenOrderIsCreatedAndSaved() {
       // arrange
       User user = userRepository.save(new User("userId", "a@email.com", "2025-11-11", Gender.MALE));
-      Product productA = productRepository.save(new Product(1L, "상품명1", "설명1", 30000, 5));
-      Product productB = productRepository.save(new Product(1L, "상품명2", "설명2", 50000, 5));
+      Product productA = productRepository.save(new Product(1L, "상품명1", "설명1", new Money(30000L), 5));
+      Product productB = productRepository.save(new Product(1L, "상품명2", "설명2", new Money(50000L), 5));
 
       List<OrderItem> orderItems = List.of(
           new OrderItem(productA, 2),
@@ -89,16 +90,16 @@ class OrderServiceIntegrationTest {
     void return_orderList_whenUserHasOrders() {
       // arrange
       User user = userRepository.save(new User("userId", "a@email.com", "2025-11-11", Gender.MALE));
-      Product productA = productRepository.save(new Product(1L, "상품명1", "설명1", 30000, 5));
-      Product productB = productRepository.save(new Product(1L, "상품명2", "설명2", 50000, 5));
+      Product productA = productRepository.save(new Product(1L, "상품명1", "설명1", new Money(30000L), 5));
+      Product productB = productRepository.save(new Product(1L, "상품명2", "설명2", new Money(50000L), 5));
 
       List<OrderItem> orderItems = List.of(
           new OrderItem(productA, 2),
           new OrderItem(productB, 1)
       );
 
-      Product productC = productRepository.save(new Product(1L, "상품명3", "설명3", 20000, 10));
-      Product productD = productRepository.save(new Product(1L, "상품명4", "설명4", 10000, 8));
+      Product productC = productRepository.save(new Product(1L, "상품명3", "설명3", new Money(20000L), 10));
+      Product productD = productRepository.save(new Product(1L, "상품명4", "설명4", new Money(10000L), 8));
 
       List<OrderItem> orderItems2 = List.of(
           new OrderItem(productC, 1),
@@ -146,8 +147,8 @@ class OrderServiceIntegrationTest {
     void return_orderInfo_whenUserHasOrders() {
       // arrange
       User user = userRepository.save(new User("userId", "a@email.com", "2025-11-11", Gender.MALE));
-      Product productA = productRepository.save(new Product(1L, "상품명1", "설명1", 30000, 5));
-      Product productB = productRepository.save(new Product(1L, "상품명2", "설명2", 50000, 5));
+      Product productA = productRepository.save(new Product(1L, "상품명1", "설명1", new Money(30000L), 5));
+      Product productB = productRepository.save(new Product(1L, "상품명2", "설명2", new Money(50000L), 5));
 
       List<OrderItem> orderItems = List.of(
           new OrderItem(productA, 2),

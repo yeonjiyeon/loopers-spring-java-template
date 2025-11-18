@@ -1,8 +1,11 @@
 package com.loopers.domain.product;
 
 import com.loopers.domain.BaseEntity;
+import com.loopers.domain.money.Money;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
@@ -10,16 +13,26 @@ import jakarta.persistence.Table;
 @Table(name = "product")
 public class Product extends BaseEntity {
 
+  @Column(nullable = false)
   private Long brandId;
+
+  @Column(nullable = false)
   private String name;
+
+  @Column(nullable = false)
   private String description;
-  private long price;
+
+  @Column(nullable = false)
+  @Embedded
+  private Money price;
+
+  @Column()
   private int stock;
 
   protected Product() {
   }
 
-  public Product(Long brandId, String name, String description, long price, int stock) {
+  public Product(Long brandId, String name, String description, Money price, int stock) {
     if (brandId == null) {
       throw new CoreException(ErrorType.BAD_REQUEST, "상품의 브랜드를 등록해야 합니다.");
     }
@@ -30,10 +43,6 @@ public class Product extends BaseEntity {
 
     if (description == null || description.isBlank()) {
       throw new CoreException(ErrorType.BAD_REQUEST, "상품의 설명을 등록해야 합니다.");
-    }
-
-    if (price < 0) {
-      throw new CoreException(ErrorType.BAD_REQUEST, "상품의 가격은 음수가 될 수 없습니다.");
     }
 
     if (stock < 0) {
@@ -59,7 +68,7 @@ public class Product extends BaseEntity {
     return description;
   }
 
-  public long getPrice() {
+  public Money getPrice() {
     return price;
   }
 

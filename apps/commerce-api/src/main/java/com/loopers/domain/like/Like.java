@@ -3,6 +3,7 @@ package com.loopers.domain.like;
 import com.loopers.domain.BaseEntity;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -15,7 +16,10 @@ import jakarta.persistence.UniqueConstraint;
     )
 })
 public class Like extends BaseEntity {
+  @Column(nullable = false)
   private Long userId;
+
+  @Column(nullable = false)
   private Long productId;
 
   protected Like() {}

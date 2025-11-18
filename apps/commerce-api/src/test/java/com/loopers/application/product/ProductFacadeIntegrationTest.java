@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.loopers.domain.brand.Brand;
 import com.loopers.domain.brand.BrandRepository;
+import com.loopers.domain.money.Money;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductRepository;
 import com.loopers.utils.DatabaseCleanUp;
@@ -46,10 +47,10 @@ class ProductFacadeIntegrationTest {
     Brand brandA = brandRepository.save(new Brand("BrandA", "브랜드A"));
     Brand brandB = brandRepository.save(new Brand("BrandB", "브랜드B"));
 
-    productRepository.save(new Product(brandA.getId(), "Product A", "설명", 20000, 10));
-    productRepository.save(new Product(brandA.getId(), "Product B", "설명", 15000, 10));
-    productRepository.save(new Product(brandB.getId(), "Product C", "설명", 10000, 10));
-    productRepository.save(new Product(brandB.getId(), "Product D", "설명", 30000, 10));
+    productRepository.save(new Product(brandA.getId(), "Product A", "설명", new Money(20000L), 10));
+    productRepository.save(new Product(brandA.getId(), "Product B", "설명", new Money(15000L), 10));
+    productRepository.save(new Product(brandB.getId(), "Product C", "설명", new Money(10000L), 10));
+    productRepository.save(new Product(brandB.getId(), "Product D", "설명", new Money(30000L), 10));
 
 
     Pageable pageable = PageRequest.of(0, 20, Sort.by(Sort.Direction.DESC, "createdAt"));

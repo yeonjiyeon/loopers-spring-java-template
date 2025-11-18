@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.loopers.domain.money.Money;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import org.junit.jupiter.api.DisplayName;
@@ -21,7 +22,7 @@ class ProductTest {
     void create_product_with_valid_data() {
       // assert
       assertDoesNotThrow(() -> {
-        new Product(1L, "name", "description", 1000, 100);
+        new Product(1L, "name", "description", new Money(1000L), 100);
       });
     }
 
@@ -34,7 +35,7 @@ class ProductTest {
       void shouldThrowException_whenBrandIdIsNull() {
         // act
         CoreException result = assertThrows(CoreException.class, () -> {
-          new Product(null, "name", "description", 1000, 100);
+          new Product(null, "name", "description", new Money(1000L), 100);
         });
 
         // assert
@@ -45,7 +46,7 @@ class ProductTest {
       void shouldThrowException_whenNameIsBlank() {
         // act
         CoreException result = assertThrows(CoreException.class, () -> {
-          new Product(1L, "", "description", 1000, 100);
+          new Product(1L, "", "description", new Money(1000L), 100);
         });
 
         // assert
@@ -57,7 +58,7 @@ class ProductTest {
       void shouldThrowException_whenDescriptionIsBlank() {
         // act
         CoreException result = assertThrows(CoreException.class, () -> {
-          new Product(1L, "name", "", 1000, 100);
+          new Product(1L, "name", "", new Money(1000L), 100);
         });
 
         // assert
@@ -69,7 +70,7 @@ class ProductTest {
       void shouldThrowException_whenPriceIsNegative() {
         // act
         CoreException result = assertThrows(CoreException.class, () -> {
-          new Product(1L, "name", "description", -1, 100);
+          new Product(1L, "name", "description", new Money(-1L), 100);
         });
 
         // assert
@@ -81,7 +82,7 @@ class ProductTest {
       void shouldThrowException_whenStockIsNegative() {
         // act
         CoreException result = assertThrows(CoreException.class, () -> {
-          new Product(1L, "name", "", 1000, -1);
+          new Product(1L, "name", "", new Money(1000L), -1);
         });
 
         // assert

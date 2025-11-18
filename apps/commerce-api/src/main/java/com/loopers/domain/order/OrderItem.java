@@ -1,6 +1,7 @@
 package com.loopers.domain.order;
 
 import com.loopers.domain.BaseEntity;
+import com.loopers.domain.money.Money;
 import com.loopers.domain.product.Product;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -11,7 +12,7 @@ public class OrderItem extends BaseEntity {
 
   private Long productId;
   private Integer quantity;
-  private Long price;
+  private Money price;
 
   protected OrderItem() {
   }
@@ -26,7 +27,7 @@ public class OrderItem extends BaseEntity {
   }
 
   public long calculateAmount() {
-    return price * quantity;
+    return price.getValue() * quantity;
   }
 
   public Long getProductId() {
@@ -37,7 +38,7 @@ public class OrderItem extends BaseEntity {
     return quantity;
   }
 
-  public Long getPrice() {
+  public Money getPrice() {
     return price;
   }
 }

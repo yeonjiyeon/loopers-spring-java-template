@@ -38,7 +38,7 @@ public class OrderService {
 
     for (OrderItemRequest item : items) {
       Product p = productMap.get(item.productId());
-      total += p.getPrice() * item.quantity();
+      total += p.getPrice().getValue() * item.quantity();
     }
     return total;
   }

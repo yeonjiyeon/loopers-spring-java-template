@@ -1,11 +1,12 @@
 package com.loopers.application.product;
 
+import com.loopers.domain.money.Money;
 import com.loopers.domain.product.Product;
 
 public record ProductInfo(
     Long id,
     String name,
-    long price,
+    Money price,
     String brandName
 ) {
   public static ProductInfo from(Product product) {

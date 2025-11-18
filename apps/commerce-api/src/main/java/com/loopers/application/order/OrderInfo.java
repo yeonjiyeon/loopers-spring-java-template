@@ -1,5 +1,6 @@
 package com.loopers.application.order;
 
+import com.loopers.domain.money.Money;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderItem;
 import java.util.List;
@@ -20,7 +21,7 @@ public record OrderInfo(
     );
   }
 
-  public record OrderItemInfo(Long productId, int quantity, long price) {
+  public record OrderItemInfo(Long productId, int quantity, Money price) {
 
     public static OrderItemInfo from(OrderItem item) {
       return new OrderItemInfo(
