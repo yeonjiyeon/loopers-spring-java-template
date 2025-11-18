@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
+import com.loopers.domain.money.Money;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductRepository;
 import com.loopers.domain.user.User;
@@ -52,7 +53,7 @@ class LikeServiceIntegrationTest {
     void like_success_whenValidRequest() {
       // arrange
       User user = userRepository.save(new User("userId", "a@email.com", "2025-11-11", Gender.MALE));
-      Product product = productRepository.save(new Product(1L, "상품A", "설명", 10000, 100));
+      Product product = productRepository.save(new Product(1L, "상품A", "설명", new Money(10000L), 100));
 
       // act
       Like like = likeService.Like(user.getId(), product.getId());
@@ -70,7 +71,7 @@ class LikeServiceIntegrationTest {
     void createLike_returnsExisting_whenAlreadyLiked() {
       // arrange
       User user = userRepository.save(new User("userId", "a@email.com", "2025-11-11", Gender.MALE));
-      Product product = productRepository.save(new Product(1L, "상품A", "설명", 10000, 100));
+      Product product = productRepository.save(new Product(1L, "상품A", "설명", new Money(10000L), 100));
 
       // act
       Like firstLike = likeService.Like(user.getId(), product.getId());
@@ -92,7 +93,7 @@ class LikeServiceIntegrationTest {
     void deleteLike_success_whenPreviouslyLiked() {
       // arrange
       User user = userRepository.save(new User("userId", "a@email.com", "2025-11-11", Gender.MALE));
-      Product product = productRepository.save(new Product(1L, "상품A", "설명", 10000, 100));
+      Product product = productRepository.save(new Product(1L, "상품A", "설명", new Money(10000L), 100));
       likeRepository.save(new Like(user.getId(), product.getId()));
 
       // act
@@ -107,7 +108,7 @@ class LikeServiceIntegrationTest {
     void unlike_doNothing_whenNotLiked() {
       // arrange
       User user = userRepository.save(new User("userId", "a@email.com", "2025-11-11", Gender.MALE));
-      Product product = productRepository.save(new Product(1L, "상품A", "설명", 10000, 100));
+      Product product = productRepository.save(new Product(1L, "상품A", "설명", new Money(10000L), 100));
 
       // act & assert
       assertDoesNotThrow(() -> likeService.unLike(user.getId(), product.getId()));

@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.loopers.domain.money.Money;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import com.loopers.utils.DatabaseCleanUp;
@@ -52,7 +53,7 @@ public class ProductServiceIntegrationTest {
             1l,
             "상품명" + i,
             "설명" + i,
-            1000 * i,
+            new Money((long) (1000 * i)),
             10 * i
         );
         productRepository.save(product);
@@ -95,7 +96,7 @@ public class ProductServiceIntegrationTest {
             1L,
             "상품명" + i,
             "설명" + i,
-            1000 * i,
+            new Money((long) (1000 * i)),
             10 * i
         );
         productRepository.save(product);
@@ -141,7 +142,7 @@ public class ProductServiceIntegrationTest {
     void return_productInfo_whenProductExists() {
       // arrange
       Product savedProduct = productRepository.save(new Product(
-          1L, "상품명", "설명", 50000, 5
+          1L, "상품명", "설명", new Money(50000L), 5
       ));
 
       // act

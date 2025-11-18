@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.loopers.domain.like.LikeRepository;
+import com.loopers.domain.money.Money;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductRepository;
 import com.loopers.domain.user.User;
@@ -51,7 +52,7 @@ class LikeFacadeIntegrationTest {
     void like_success_whenFirstLike() {
       // arrange
       User user = userRepository.save(new User("userA", "a@email.com", "2025-11-11", Gender.MALE));
-      Product product = productRepository.save(new Product(1L, "상품A", "설명", 10000, 100));
+      Product product = productRepository.save(new Product(1L, "상품A", "설명", new Money(10000L), 100));
 
       // act
       LikeInfo result = likeFacade.like(user.getId(), product.getId());
@@ -72,7 +73,7 @@ class LikeFacadeIntegrationTest {
       // arrange
       User user1 = userRepository.save(new User("userA", "a@email.com", "2025-11-11", Gender.MALE));
       User user2 = userRepository.save(new User("userB", "b@email.com", "2025-11-11", Gender.FEMALE));
-      Product product = productRepository.save(new Product(1L, "상품A", "설명", 10000, 100));
+      Product product = productRepository.save(new Product(1L, "상품A", "설명", new Money(10000L), 100));
 
       likeFacade.like(user1.getId(), product.getId());
 
@@ -95,7 +96,7 @@ class LikeFacadeIntegrationTest {
     void like_idempotent_whenDuplicateRequest() {
       // arrange
       User user = userRepository.save(new User("userA", "a@email.com", "2025-11-11", Gender.MALE));
-      Product product = productRepository.save(new Product(1L, "상품A", "설명", 10000, 100));
+      Product product = productRepository.save(new Product(1L, "상품A", "설명", new Money(10000L), 100));
 
       likeFacade.like(user.getId(), product.getId());
       assertThat(likeRepository.countByProductId(product.getId())).isEqualTo(1);
@@ -121,7 +122,7 @@ class LikeFacadeIntegrationTest {
     void unlike_success_and_returns_updated_count() {
       // arrange
       User user = userRepository.save(new User("userA", "a@email.com", "2025-11-11", Gender.MALE));
-      Product product = productRepository.save(new Product(1L, "상품A", "설명", 10000, 100));
+      Product product = productRepository.save(new Product(1L, "상품A", "설명", new Money(10000L), 100));
 
       likeFacade.like(user.getId(), product.getId());
       assertThat(likeRepository.countByProductId(product.getId())).isEqualTo(1);

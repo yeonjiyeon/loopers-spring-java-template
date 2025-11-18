@@ -5,6 +5,7 @@ import com.loopers.domain.product.Product;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
@@ -15,6 +16,7 @@ import java.util.List;
 @Table(name = "orders")
 public class Order extends BaseEntity {
 
+  @Column(nullable = false)
   private Long userId;
 
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)

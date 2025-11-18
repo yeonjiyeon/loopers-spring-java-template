@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.loopers.domain.brand.Brand;
 import com.loopers.domain.brand.BrandRepository;
+import com.loopers.domain.money.Money;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductRepository;
 import com.loopers.support.error.CoreException;
@@ -52,9 +53,9 @@ class BrandFacadeIntegrationTest {
       // arrange
       Brand brand = brandRepository.save(new Brand("Nike", "Just Do It."));
 
-      productRepository.save(new Product(brand.getId(), "Air Max", "설명1", 150000, 10));
-      productRepository.save(new Product(brand.getId(), "Air Force", "설명2", 130000, 10));
-      productRepository.save(new Product(brand.getId(), "Jordan", "설명3", 200000, 10));
+      productRepository.save(new Product(brand.getId(), "Air Max", "설명1", new Money(150000L), 10));
+      productRepository.save(new Product(brand.getId(), "Air Force", "설명2", new Money(130000L), 10));
+      productRepository.save(new Product(brand.getId(), "Jordan", "설명3", new Money(200000L), 10));
 
       Pageable pageable = PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "createdAt"));
 
