@@ -3,19 +3,28 @@ package com.loopers.domain.order;
 import com.loopers.domain.BaseEntity;
 import com.loopers.domain.money.Money;
 import com.loopers.domain.product.Product;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "order_item")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderItem extends BaseEntity {
 
+  @Column(name = "ref_product_id", nullable = false)
   private Long productId;
-  private Integer quantity;
-  private Money price;
 
-  protected OrderItem() {
-  }
+
+  private Integer quantity;
+
+  @Embedded
+  @AttributeOverride(name = "value", column = @Column(name = "price", nullable = false))
+  private Money price;
 
   public OrderItem(Product product, int quantity) {
     if (product.getStock() < quantity) {
