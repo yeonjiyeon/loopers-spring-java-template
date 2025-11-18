@@ -56,7 +56,7 @@ class LikeServiceIntegrationTest {
       Product product = productRepository.save(new Product(1L, "상품A", "설명", new Money(10000L), 100));
 
       // act
-      Like like = likeService.Like(user.getId(), product.getId());
+      Like like = likeService.like(user.getId(), product.getId());
 
       // assert
       assertAll(
@@ -74,8 +74,8 @@ class LikeServiceIntegrationTest {
       Product product = productRepository.save(new Product(1L, "상품A", "설명", new Money(10000L), 100));
 
       // act
-      Like firstLike = likeService.Like(user.getId(), product.getId());
-      Like secondLike = likeService.Like(user.getId(), product.getId());
+      Like firstLike = likeService.like(user.getId(), product.getId());
+      Like secondLike = likeService.like(user.getId(), product.getId());
 
       // assert
       assertAll(

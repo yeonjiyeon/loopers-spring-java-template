@@ -1,5 +1,7 @@
 package com.loopers.interfaces.order;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import java.util.List;
 
 public class OrderV1Dto {
@@ -8,8 +10,8 @@ public class OrderV1Dto {
 
   }
 
-  public record OrderItemRequest(Long productId,
-                                 int quantity
+  public record OrderItemRequest(@NotNull Long productId,
+                                 @Positive int quantity
   ) {
 
   }

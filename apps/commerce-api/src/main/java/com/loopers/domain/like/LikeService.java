@@ -9,7 +9,7 @@ public class LikeService {
 
   private final LikeRepository likeRepository;
 
-  public Like Like(long userId, long productId) {
+  public Like like(long userId, long productId) {
     return likeRepository.findByUserIdAndProductId(userId, productId)
         .orElseGet(() -> likeRepository.save(new Like(userId, productId)));
   }

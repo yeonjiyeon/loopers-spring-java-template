@@ -67,7 +67,7 @@ class LikeFacadeIntegrationTest {
       );
     }
 
-    @DisplayName("두 번째 사용자가 좋아요 요청 시, 갱신 전 카운트(1)가 반환된다.")
+    @DisplayName("두 번째 사용자가 좋아요 요청 시, 갱신 전 카운트(2)가 반환된다.")
     @Test
     void like_success_whenSecondLike() {
       // arrange
