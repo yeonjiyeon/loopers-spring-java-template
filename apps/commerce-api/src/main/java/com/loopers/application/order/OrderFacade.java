@@ -41,15 +41,13 @@ public class OrderFacade {
         .toList();
 
     List<Product> products = productService.getProducts(productIds);
-    long totalAmount = orderService.calculateTotal(products, request.items());
-
-
-    productService.deductStock(products, request.items());
-
-    pointService.deductPoint(user.getId(), totalAmount);
 
     List<OrderItem> orderItems = buildOrderItems(products, request.items());
     Order order = orderService.createOrder(user.getId(), orderItems);
+    long totalAmount = order.getTotalAmount().getValue();
+
+    productService.deductStock(products, orderItems);
+    pointService.deductPoint(user, totalAmount);
 
     return OrderInfo.from(order);
   }

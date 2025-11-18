@@ -1,5 +1,6 @@
 package com.loopers.domain.product;
 
+import com.loopers.domain.order.OrderItem;
 import com.loopers.interfaces.order.OrderV1Dto.OrderItemRequest;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
@@ -39,17 +40,17 @@ public class ProductService {
         .toList();
   }
 
-  public void deductStock(List<Product> products, List<OrderItemRequest> orderItems) {
+  public void deductStock(List<Product> products, List<OrderItem> orderItems) {
 
-    Map<Long, Integer> qtyMap = orderItems.stream()
-        .collect(Collectors.toMap(OrderItemRequest::productId, OrderItemRequest::quantity));
+    Map<Long, Integer> quantityMap = orderItems.stream()
+        .collect(Collectors.toMap(OrderItem::getProductId, OrderItem::getQuantity));
 
     for (Product product : products) {
-      int requestedQty = qtyMap.get(product.getId());
-      if (product.getStock() < requestedQty) {
+      int quantityToDeduct = quantityMap.get(product.getId());
+      if (product.getStock() < quantityToDeduct) {
         throw new CoreException(ErrorType.BAD_REQUEST, "품절된 상품입니다.");
       }
-      product.deductStock(requestedQty);
+      product.deductStock(quantityToDeduct);
     }
   }
 
