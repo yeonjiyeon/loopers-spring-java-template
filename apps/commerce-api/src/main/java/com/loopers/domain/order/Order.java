@@ -43,6 +43,7 @@ public class Order extends BaseEntity {
     }
     this.userId = userId;
     this.orderItems = orderItems;
+    this.totalAmount = new Money(calculateTotalAmount());
   }
 
   public Long getUserId() {
@@ -70,5 +71,9 @@ public class Order extends BaseEntity {
     return orderItems.stream()
         .mapToLong(OrderItem::calculateAmount)
         .sum();
+  }
+
+  public Money getTotalAmount() {
+    return totalAmount;
   }
 }
