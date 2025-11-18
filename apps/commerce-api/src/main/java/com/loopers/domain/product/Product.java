@@ -29,8 +29,10 @@ public class Product extends BaseEntity {
   @Embedded
   private Money price;
 
-  @Column()
   private int stock;
+
+  private int like_count;
+
 
   public Product(Long brandId, String name, String description, Money price, int stock) {
     if (brandId == null) {
