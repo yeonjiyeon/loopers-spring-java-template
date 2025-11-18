@@ -42,7 +42,7 @@ class ProductTest {
         assertThat(result.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
       }
       @Test
-      @DisplayName("제품 이름(description)이 없거나(null) 공백이면, Product 객체 생성은 실패한다.")
+      @DisplayName("제품 이름(name)이 없거나(null) 공백이면, Product 객체 생성은 실패한다.")
       void shouldThrowException_whenNameIsBlank() {
         // act
         CoreException result = assertThrows(CoreException.class, () -> {
@@ -82,7 +82,7 @@ class ProductTest {
       void shouldThrowException_whenStockIsNegative() {
         // act
         CoreException result = assertThrows(CoreException.class, () -> {
-          new Product(1L, "name", "", new Money(1000L), -1);
+          new Product(1L, "name", "description", new Money(1000L), -1);
         });
 
         // assert

@@ -16,7 +16,7 @@ public class LikeFacade {
   private final LikeService likeService;
 
   public LikeInfo like(long userId, long productId) {
-    Like like = likeService.Like(userId, productId);
+    Like like = likeService.like(userId, productId);
     long totalLikes = likeService.countLikesByProductId(productId);
     return LikeInfo.from(like, totalLikes);
   }
