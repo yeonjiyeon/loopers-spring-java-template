@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.loopers.domain.point.Point;
 import com.loopers.domain.user.User;
 import com.loopers.domain.user.User.Gender;
 import com.loopers.domain.user.UserRepository;
@@ -59,7 +60,7 @@ class PointV1ApiE2ETest {
     @Test
     void returnsPoint_whenHeaderIsProvided() {
       // arrange
-      int expectedPoint = 10;
+      Point expectedPoint = new Point(10);
 
       User user = userRepository.save(
           new User("validId10", "valid@email.com", "2025-10-28", Gender.FEMALE, expectedPoint)

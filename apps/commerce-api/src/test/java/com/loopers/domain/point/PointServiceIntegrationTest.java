@@ -53,19 +53,18 @@ public class PointServiceIntegrationTest {
     void return_user_point_whenValidIdIsProvided() {
       // arrange
       String findId = "findId";
-      int expectedPoint = 10;
-      User existingUser = new User(findId, VALID_EMAIL, VALID_BIRTHDATE, VALID_GENDER,
-          expectedPoint);
+      Point expectedPoint = new Point(10);
+      User existingUser = new User(findId, VALID_EMAIL, VALID_BIRTHDATE, VALID_GENDER, expectedPoint);
 
       // act
       userRepository.save(existingUser);
 
-      Integer point = pointService.getPoint(findId);
+      Point point = pointService.getPoint(findId);
 
       // assert
       assertAll(
           () -> assertNotNull(point),
-          () -> assertEquals(expectedPoint, point.intValue())
+          () -> assertEquals(expectedPoint.getAmount(), point.getAmount())
       );
     }
 
@@ -76,7 +75,7 @@ public class PointServiceIntegrationTest {
       String invalidId = "non-existent-user-id";
 
       // act
-      Integer point = pointService.getPoint(invalidId);
+      Point point = pointService.getPoint(invalidId);
 
       // assert
       assertNull(point);

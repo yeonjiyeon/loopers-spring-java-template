@@ -1,12 +1,13 @@
 package com.loopers.interfaces.api.point;
 
+import com.loopers.domain.point.Point;
 import jakarta.validation.constraints.NotNull;
 
 public class PointV1Dto {
 
-  public record PointResponse(Integer point) {
+  public record PointResponse(Point point) {
 
-    public static PointResponse from(int chargePoint) {
+    public static PointResponse from(Point chargePoint) {
       return new PointResponse(
         chargePoint
       );

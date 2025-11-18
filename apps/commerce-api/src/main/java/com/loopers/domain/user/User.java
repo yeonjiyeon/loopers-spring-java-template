@@ -1,37 +1,35 @@
 package com.loopers.domain.user;
 
+import com.loopers.domain.BaseEntity;
+import com.loopers.domain.point.Point;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "user")
-public class User {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class User extends BaseEntity {
 
   private static final String ID_PATTERN = "^[a-zA-Z0-9]{1,10}$";
   private static final String EMAIL_PATTERN = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
   private static final String BIRTHDATE_PATTERN = "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$";
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-  String userId;
-  String email;
-  String birthdate;
+  private String userId;
+  private String email;
+  private String birthdate;
   private Gender gender;
-  private int point;
+  @Embedded
+  private Point point;
 
   public enum Gender {
     MALE, FEMALE
-  }
-
-  protected User() {
   }
 
   public User(String userId, String email, String birthdate, Gender gender) {
@@ -62,10 +60,10 @@ public class User {
     this.email = email;
     this.birthdate = birthdate;
     this.gender = gender;
-    this.point = 0;
+    this.point = new Point(0);
   }
 
-  public User(String userId, String email, String birthdate, Gender gender, int point) {
+  public User(String userId, String email, String birthdate, Gender gender, Point point) {
     this.userId = userId;
     this.email = email;
     this.birthdate = birthdate;
@@ -89,15 +87,8 @@ public class User {
     return gender;
   }
 
-  public int getPoint() {
+  public Point getPoint() {
     return point;
   }
 
-  public int chargePoint(int amount) {
-    if (amount <= 0) {
-      throw new CoreException(ErrorType.BAD_REQUEST, "충전 금액은 0보다 커야 합니다.");
-    }
-
-    return this.point += amount;
-  }
 }

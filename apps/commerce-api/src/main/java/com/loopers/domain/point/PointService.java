@@ -15,7 +15,7 @@ public class PointService {
 
   private final UserRepository userRepository;
 
-  public Integer getPoint(String userId) {
+  public Point getPoint(String userId) {
     return userRepository.findByUserId(userId)
         .map(User::getPoint)
         .orElse(null);
@@ -25,8 +25,16 @@ public class PointService {
   public PointResponse charge(String userId, int amount) {
     User user = userRepository.findByUserId(userId)
         .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "유저를 찾을 수 없습니다."));
-    int chargePoint = user.chargePoint(amount);
+    Point chargePoint = user.getPoint().add(amount);
 
     return PointResponse.from(chargePoint);
+  }
+
+  public void deductPoint(Long userId, long totalAmount) {
+    long currentPoint = userRepository.findPointById(userId);
+
+    if (currentPoint < totalAmount) {
+      throw new CoreException(ErrorType.BAD_REQUEST, "잔액이 부족합니다.");
+    }
   }
 }
