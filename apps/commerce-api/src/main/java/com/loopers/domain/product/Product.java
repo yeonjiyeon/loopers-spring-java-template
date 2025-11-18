@@ -8,9 +8,12 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "product")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product extends BaseEntity {
 
   @Column(nullable = false)
@@ -28,9 +31,6 @@ public class Product extends BaseEntity {
 
   @Column()
   private int stock;
-
-  protected Product() {
-  }
 
   public Product(Long brandId, String name, String description, Money price, int stock) {
     if (brandId == null) {

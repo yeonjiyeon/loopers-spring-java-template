@@ -9,9 +9,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "user")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
 
   private static final String ID_PATTERN = "^[a-zA-Z0-9]{1,10}$";
@@ -27,9 +30,6 @@ public class User extends BaseEntity {
 
   public enum Gender {
     MALE, FEMALE
-  }
-
-  protected User() {
   }
 
   public User(String userId, String email, String birthdate, Gender gender) {

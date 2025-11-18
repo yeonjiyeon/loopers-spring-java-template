@@ -6,9 +6,12 @@ import com.loopers.support.error.ErrorType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "brand")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Brand extends BaseEntity {
 
   @Column(nullable = false)
@@ -16,9 +19,6 @@ public class Brand extends BaseEntity {
 
   @Column(nullable = false)
   private String description;
-
-  protected Brand() {
-  }
 
   public Brand(String name, String description) {
     if (name == null || name.isBlank()) {
