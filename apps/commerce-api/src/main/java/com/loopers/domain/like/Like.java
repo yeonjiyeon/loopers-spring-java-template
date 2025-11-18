@@ -7,6 +7,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "likes", uniqueConstraints = {
@@ -15,14 +17,13 @@ import jakarta.persistence.UniqueConstraint;
         columnNames = {"userId", "productId"}
     )
 })
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Like extends BaseEntity {
   @Column(nullable = false)
   private Long userId;
 
   @Column(nullable = false)
   private Long productId;
-
-  protected Like() {}
 
   public Like(Long userId, Long productId) {
     super();

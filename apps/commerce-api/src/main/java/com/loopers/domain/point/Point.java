@@ -3,16 +3,16 @@ package com.loopers.domain.point;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Embeddable
 @EqualsAndHashCode
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Point {
 
   private int amount;
-
-  protected Point() {
-  }
 
   public Point(int amount) {
     validate(amount);

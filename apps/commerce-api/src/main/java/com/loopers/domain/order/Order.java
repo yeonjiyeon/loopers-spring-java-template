@@ -11,9 +11,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "orders")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order extends BaseEntity {
 
   @Column(nullable = false)
@@ -22,9 +25,6 @@ public class Order extends BaseEntity {
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
   @JoinColumn(name = "order_id")
   private List<OrderItem> orderItems = new java.util.ArrayList<>();
-
-  protected Order() {
-  }
 
   public Order(Long userId, List<OrderItem> orderItems) {
     if (userId == null) {
