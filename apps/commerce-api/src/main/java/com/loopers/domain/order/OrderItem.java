@@ -3,6 +3,8 @@ package com.loopers.domain.order;
 import com.loopers.domain.BaseEntity;
 import com.loopers.domain.money.Money;
 import com.loopers.domain.product.Product;
+import com.loopers.support.error.CoreException;
+import com.loopers.support.error.ErrorType;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -28,7 +30,7 @@ public class OrderItem extends BaseEntity {
 
   public OrderItem(Product product, int quantity) {
     if (product.getStock() < quantity) {
-      throw new IllegalArgumentException("재고가 부족합니다");
+      throw new CoreException(ErrorType.NOT_FOUND, "재고가 부족합니다");
     }
     this.productId = product.getId();
     this.quantity = quantity;
