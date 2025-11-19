@@ -30,12 +30,13 @@ public class PointService {
     return PointResponse.from(chargePoint);
   }
 
+  @Transactional
   public void deductPoint(User user, long totalAmount) {
 
     if (user.getPoint().getAmount() < totalAmount) {
       throw new CoreException(ErrorType.BAD_REQUEST, "잔액이 부족합니다.");
     }
 
-    user.getPoint().subtract(totalAmount);
+    user.usePoint(totalAmount);
   }
 }
