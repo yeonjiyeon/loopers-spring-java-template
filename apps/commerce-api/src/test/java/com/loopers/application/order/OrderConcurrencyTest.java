@@ -51,7 +51,7 @@ class OrderConcurrencyTest {
   class PointConcurrency {
 
     private User savedUser;
-    private Product savedProduct;
+    private List<Product> distinctProducts;
 
     @BeforeEach
     void setUp() {
@@ -59,8 +59,12 @@ class OrderConcurrencyTest {
           new Point(10000L));
       this.savedUser = userJpaRepository.saveAndFlush(user);
 
-      Product product = new Product(1l, "테스트상품", "상품 설명", new Money(1000L), 100);
-      this.savedProduct = productJpaRepository.saveAndFlush(product);
+      this.distinctProducts = IntStream.range(0, 10)
+          .mapToObj(i -> {
+            Product product = new Product(1l, "상품" + i, "설명", new Money(1000L), 100);
+            return productJpaRepository.saveAndFlush(product);
+          })
+          .toList();
     }
 
     @Test
@@ -68,8 +72,6 @@ class OrderConcurrencyTest {
     void point_deduction_concurrency_test() throws InterruptedException {
       // arrange
       int threadCount = 10;
-      PlaceOrder command = new PlaceOrder(savedUser.getId(),
-          List.of(new Item(savedProduct.getId(), 1)));
 
       ExecutorService executorService = Executors.newFixedThreadPool(32);
       CountDownLatch latch = new CountDownLatch(threadCount);
@@ -79,8 +81,12 @@ class OrderConcurrencyTest {
 
       // act
       for (int i = 0; i < threadCount; i++) {
+        final int index = i;
         executorService.submit(() -> {
           try {
+            Product targetProduct = distinctProducts.get(index);
+            PlaceOrder command = new PlaceOrder(savedUser.getId(),
+                List.of(new Item(targetProduct.getId(), 1)));
             orderFacade.placeOrder(command);
             successCount.getAndIncrement();
           } catch (Exception e) {
