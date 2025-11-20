@@ -23,10 +23,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
-@Transactional
 class OrderFacadeIntegrationTest {
 
   @Autowired
@@ -54,14 +52,14 @@ class OrderFacadeIntegrationTest {
     void placeOrder_success() {
       // arrange
       User user = new User("userA", "a@email.com", "2025-11-11", Gender.MALE, new Point(100000L));
-      userRepository.save(user);
+      User savedUser = userRepository.save(user);
 
       Long brandId = 1L;
       Product product = new Product(brandId, "Product A", "설명", new Money(20000L), 10);
       Product saveProduct = productRepository.save(product);
 
       Item itemCommand = new Item(saveProduct.getId(), 3);
-      OrderCommand.PlaceOrder command = new OrderCommand.PlaceOrder(user.getId(), List.of(itemCommand));
+      OrderCommand.PlaceOrder command = new OrderCommand.PlaceOrder(savedUser.getId(), List.of(itemCommand));
 
       // act
       OrderInfo result = orderFacade.placeOrder(command);
@@ -122,5 +120,33 @@ class OrderFacadeIntegrationTest {
 
       assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
     }
+
+    @DisplayName("포인트 잔액 부족으로 주문이 실패하면, 차감되었던 재고는 롤백되어 원상복구된다.")
+    @Test
+    void placeOrder_transaction_rollback_test() {
+      // arrange
+      Product product = productRepository.save(
+          new Product(1L, "Product A", "설명", new Money(20000L), 10)
+      );
+
+      User user = userRepository.save(
+          new User("userRollback", "rollback@email.com", "2025-11-11", Gender.MALE, new Point(0L))
+      );
+
+      Item itemCommand = new Item(product.getId(), 1); // 1개 주문 시도
+      OrderCommand.PlaceOrder command = new OrderCommand.PlaceOrder(user.getId(), List.of(itemCommand));
+
+      // act
+      assertThrows(CoreException.class, () -> {
+        orderFacade.placeOrder(command);
+      });
+
+      // assert
+      Product rollbackedProduct = productRepository.findById(product.getId()).orElseThrow();
+
+      assertThat(rollbackedProduct.getStock()).isEqualTo(10);
+    }
   }
+
+
 }
