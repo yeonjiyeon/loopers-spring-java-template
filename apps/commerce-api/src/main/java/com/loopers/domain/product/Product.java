@@ -8,6 +8,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -32,6 +33,9 @@ public class Product extends BaseEntity {
   private int stock;
 
   private int likeCount;
+
+  @Version
+  private Long version;
 
 
   public Product(Long brandId, String name, String description, Money price, int stock) {
