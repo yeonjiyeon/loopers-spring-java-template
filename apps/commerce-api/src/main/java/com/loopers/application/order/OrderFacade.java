@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Component
+@Transactional
 public class OrderFacade {
 
   private final ProductService productService;
@@ -31,7 +32,7 @@ public class OrderFacade {
   @Transactional
   public OrderInfo placeOrder(PlaceOrder command) {
 
-    User user = userService.findById(command.userId())
+    User user = userService.findByIdWithLock(command.userId())
         .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "유저를 찾을 수 없습니다."));
 
     List<Long> productIds = command.items().stream()
