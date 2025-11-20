@@ -8,4 +8,6 @@ public interface UserRepository {
   Optional<User> findByUserId(String userId);
 
   long findPointById(Long userId);
+
+  Optional<User> findById(Long id);
 }

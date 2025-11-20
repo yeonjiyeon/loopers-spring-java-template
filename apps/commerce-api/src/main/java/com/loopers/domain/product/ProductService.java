@@ -1,7 +1,6 @@
 package com.loopers.domain.product;
 
 import com.loopers.domain.order.OrderItem;
-import com.loopers.interfaces.order.OrderV1Dto.OrderItemRequest;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import java.util.List;

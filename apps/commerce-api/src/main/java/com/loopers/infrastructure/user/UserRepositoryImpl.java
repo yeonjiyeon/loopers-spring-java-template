@@ -25,4 +25,9 @@ public class UserRepositoryImpl implements UserRepository {
   public long findPointById(Long userId) {
     return userJpaRepository.findPointById(userId);
   }
+
+  @Override
+  public Optional<User> findById(Long id) {
+    return userJpaRepository.findById(id);
+  }
 }

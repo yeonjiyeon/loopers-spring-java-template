@@ -1,18 +1,18 @@
 package com.loopers.application.order;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.loopers.domain.money.Money;
+import com.loopers.domain.order.OrderCommand;
+import com.loopers.domain.order.OrderCommand.Item;
 import com.loopers.domain.point.Point;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductRepository;
 import com.loopers.domain.user.User;
 import com.loopers.domain.user.User.Gender;
 import com.loopers.domain.user.UserRepository;
-import com.loopers.interfaces.order.OrderV1Dto.OrderItemRequest;
-import com.loopers.interfaces.order.OrderV1Dto.OrderRequest;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import com.loopers.utils.DatabaseCleanUp;
@@ -60,12 +60,11 @@ class OrderFacadeIntegrationTest {
       Product product = new Product(brandId, "Product A", "설명", new Money(20000L), 10);
       Product saveProduct = productRepository.save(product);
 
-      OrderItemRequest itemRequest = new OrderItemRequest(saveProduct.getId(), 3);
-      OrderRequest request = new OrderRequest(List.of(itemRequest));
+      Item itemCommand = new Item(saveProduct.getId(), 3);
+      OrderCommand.PlaceOrder command = new OrderCommand.PlaceOrder(user.getId(), List.of(itemCommand));
 
       // act
-      OrderInfo result = orderFacade.placeOrder(user.getUserId(
-      ), request);
+      OrderInfo result = orderFacade.placeOrder(command);
 
       // assert
       assertAll(
@@ -92,12 +91,12 @@ class OrderFacadeIntegrationTest {
           new Product(1L, "Product A", "설명", new Money(20000L), 2)
       );
 
-      OrderItemRequest itemRequest = new OrderItemRequest(product.getId(), 3);
-      OrderRequest request = new OrderRequest(List.of(itemRequest));
+      Item itemCommand = new Item(product.getId(), 3);
+      OrderCommand.PlaceOrder command = new OrderCommand.PlaceOrder(user.getId(), List.of(itemCommand));
 
       // act & assert
       CoreException exception = assertThrows(CoreException.class, () -> {
-        orderFacade.placeOrder(user.getUserId(), request);
+        orderFacade.placeOrder(command);
       });
 
       assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
@@ -113,12 +112,12 @@ class OrderFacadeIntegrationTest {
           new Product(1L, "Product A", "설명", new Money(20000L), 10)
       );
 
-      OrderItemRequest itemRequest = new OrderItemRequest(product.getId(), 1);
-      OrderRequest request = new OrderRequest(List.of(itemRequest));
+      Item itemCommand = new Item(product.getId(), 1);
+      OrderCommand.PlaceOrder command = new OrderCommand.PlaceOrder(user.getId(), List.of(itemCommand));
 
       // act & assert
       CoreException exception = assertThrows(CoreException.class, () -> {
-        orderFacade.placeOrder(user.getUserId(), request);
+        orderFacade.placeOrder(command);
       });
 
       assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
