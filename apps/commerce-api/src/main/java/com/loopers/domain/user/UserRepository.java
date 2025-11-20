@@ -10,4 +10,6 @@ public interface UserRepository {
   long findPointById(Long userId);
 
   Optional<User> findById(Long id);
+
+  Optional<User> findByUserIdWithLock(Long id);
 }
