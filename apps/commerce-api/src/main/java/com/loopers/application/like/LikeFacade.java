@@ -8,6 +8,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @RequiredArgsConstructor
 @Component
@@ -15,6 +16,7 @@ public class LikeFacade {
 
   private final ProductService productService;
   private final LikeService likeService;
+  private final TransactionTemplate transactionTemplate;
 
   private static final int RETRY_COUNT = 30;
 
@@ -46,20 +48,25 @@ public class LikeFacade {
   }
 
   public int unLike(long userId, long productId) {
-
     for (int i = 0; i < RETRY_COUNT; i++) {
       try {
-        likeService.unLike(userId, productId);
 
-        return productService.decreaseLikeCount(productId);
+        return transactionTemplate.execute(status -> {
+
+          likeService.unLike(userId, productId);
+
+          return productService.decreaseLikeCount(productId);
+
+        });
+
       } catch (ObjectOptimisticLockingFailureException e) {
+
         if (i == RETRY_COUNT - 1) {
           throw e;
         }
         sleep(50);
       }
     }
-
     throw new IllegalStateException("싫어요 처리 재시도 횟수를 초과했습니다.");
   }
 
