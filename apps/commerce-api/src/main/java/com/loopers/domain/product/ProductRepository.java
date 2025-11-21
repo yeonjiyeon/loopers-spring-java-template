@@ -13,6 +13,4 @@ public interface ProductRepository {
   Optional<Product> findById(Long id);
 
   Page<Product> findByBrandId(Long brandId, Pageable pageable);
-
-  Optional<Product> findByIdWithLock(Long id);
 }

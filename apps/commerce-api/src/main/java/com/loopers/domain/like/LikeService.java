@@ -3,6 +3,7 @@ package com.loopers.domain.like;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -18,6 +19,7 @@ public class LikeService {
     return likeRepository.findByUserIdAndProductId(userId, productId);
   }
 
+  @Transactional
   public void unLike(Long userId, Long productId) {
     likeRepository.deleteByUserIdAndProductId(userId, productId);
   }
