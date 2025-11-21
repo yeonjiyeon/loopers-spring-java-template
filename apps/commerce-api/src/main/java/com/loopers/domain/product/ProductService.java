@@ -23,6 +23,7 @@ public class ProductService {
     return productRepository.findAll(pageable);
   }
 
+  @Transactional
   public Product getProduct(Long id) {
     return productRepository.findById(id).orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "상품을 찾을 수 없습니다."));
   }
@@ -54,16 +55,18 @@ public class ProductService {
   }
 
   @Transactional
-  public int increaseLikeCount(Product product) {
+  public int increaseLikeCount(Long productId) {
+    Product product = productRepository.findById(productId)
+        .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "상품을 찾을 수 없습니다."));
+
     return product.increaseLikeCount();
   }
 
-  public int decreaseLikeCount(Product product) {
-    return product.decreaseLikeCount();
-  }
-
-  public Product getProductWithLock(Long id) {
-    return productRepository.findByIdWithLock(id)
+  @Transactional
+  public int decreaseLikeCount(Long productId) {
+    Product product = productRepository.findById(productId)
         .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "상품을 찾을 수 없습니다."));
+
+    return product.decreaseLikeCount();
   }
 }

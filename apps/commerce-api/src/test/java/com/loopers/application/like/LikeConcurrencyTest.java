@@ -8,7 +8,7 @@ import com.loopers.domain.product.ProductRepository;
 import com.loopers.domain.user.User;
 import com.loopers.infrastructure.user.UserJpaRepository;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -23,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 public class LikeConcurrencyTest {
+
   @Autowired
   private LikeFacade likeFacade;
 
@@ -41,7 +42,7 @@ public class LikeConcurrencyTest {
   }
 
   @Nested
-  @DisplayName("좋아요 증가 동시성 (비관적 락)")
+  @DisplayName("좋아요 증가 동시성 (낙관적  락)")
   class LikeIncreaseConcurrency {
 
     private Product targetProduct;
@@ -60,46 +61,40 @@ public class LikeConcurrencyTest {
     }
 
     @Test
-    @DisplayName("동시에 10명이 좋아요를 누르면, 상품의 좋아요 개수는 정확히 10개가 되어야 한다.")
-    void like_concurrency_test() throws InterruptedException {
+    @DisplayName("동시에 10명이 좋아요를 눌러도, 최종 좋아요 개수와 성공 요청 수는 일치해야 한다.")
+    void like_concurrency_test() {
       // arrange
       int threadCount = 10;
       ExecutorService executorService = Executors.newFixedThreadPool(32);
-      CountDownLatch latch = new CountDownLatch(threadCount);
 
       AtomicInteger successCount = new AtomicInteger();
       AtomicInteger failCount = new AtomicInteger();
 
       // act
-      for (int i = 0; i < threadCount; i++) {
-        final int index = i;
-        executorService.submit(() -> {
-          try {
-            likeFacade.like(users.get(index).getId(), targetProduct.getId());
-            successCount.getAndIncrement();
-          } catch (Exception e) {
-            System.out.println("좋아요 실패: " + e.getMessage());
-            failCount.getAndIncrement();
-          } finally {
-            latch.countDown();
-          }
-        });
-      }
+      List<CompletableFuture<Void>> futures = IntStream.range(0, threadCount)
+          .mapToObj(i -> CompletableFuture.runAsync(() -> {
+            try {
+              likeFacade.like(users.get(i).getId(), targetProduct.getId());
+              successCount.getAndIncrement();
+            } catch (Exception e) {
+              System.out.println("좋아요 실패: " + e.getMessage());
+              failCount.getAndIncrement();
+            }
+          }, executorService))
+          .toList();
 
-      latch.await();
+      CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
       Product resultProduct = productRepository.findById(targetProduct.getId()).orElseThrow();
 
-      System.out.println("좋아요 성공: " + successCount.get() + ", 실패: " + failCount.get());
-
       // assert
-      assertThat(successCount.get()).isEqualTo(threadCount);
-      assertThat(resultProduct.getLikeCount()).isEqualTo(10);
+      assertThat(resultProduct.getLikeCount()).isEqualTo(successCount.get());
+      assertThat(successCount.get() + failCount.get()).isEqualTo(threadCount);
     }
   }
 
   @Nested
-  @DisplayName("좋아요 취소 동시성 (비관적 락)")
+  @DisplayName("좋아요 취소 동시성 (낙관적 락)")
   class LikeDecreaseConcurrency {
 
     private Product targetProduct;
@@ -116,14 +111,15 @@ public class LikeConcurrencyTest {
           ))
           .toList();
 
-      for (User user : users) {
-        likeFacade.like(user.getId(), targetProduct.getId());
-      }
+      users.forEach(user -> likeFacade.like(user.getId(), targetProduct.getId()));
+
+      Product initial = productRepository.findById(targetProduct.getId()).orElseThrow();
+      assertThat(initial.getLikeCount()).isEqualTo(10);
     }
 
     @Test
     @DisplayName("이미 좋아요를 누른 10명이 동시에 취소를 요청하면, 좋아요 개수는 0개가 되어야 한다.")
-    void unlike_concurrency_test() throws InterruptedException {
+    void unlike_concurrency_test() {
       // arrange
       int threadCount = 10;
 
@@ -131,37 +127,30 @@ public class LikeConcurrencyTest {
       assertThat(initialProduct.getLikeCount()).isEqualTo(10);
 
       ExecutorService executorService = Executors.newFixedThreadPool(32);
-      CountDownLatch latch = new CountDownLatch(threadCount);
 
       AtomicInteger successCount = new AtomicInteger();
       AtomicInteger failCount = new AtomicInteger();
 
       // act
-      for (int i = 0; i < threadCount; i++) {
-        final int index = i;
-        executorService.submit(() -> {
-          try {
-            likeFacade.unLike(users.get(index).getId(), targetProduct.getId());
-            successCount.getAndIncrement();
-          } catch (Exception e) {
-            System.out.println("취소 실패: " + e.getMessage());
-            failCount.getAndIncrement();
-          } finally {
-            latch.countDown();
-          }
-        });
-      }
+      List<CompletableFuture<Void>> futures = IntStream.range(0, threadCount)
+          .mapToObj(i -> CompletableFuture.runAsync(() -> {
+            try {
+              likeFacade.unLike(users.get(i).getId(), targetProduct.getId());
+              successCount.getAndIncrement();
+            } catch (Exception e) {
+              System.out.println("취소 실패: " + e.getMessage());
+              failCount.getAndIncrement();
+            }
+          }, executorService))
+          .toList();
 
-      latch.await();
-
+      CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
       Product resultProduct = productRepository.findById(targetProduct.getId()).orElseThrow();
 
-      System.out.println("취소 성공: " + successCount.get() + ", 실패: " + failCount.get());
-
       // assert
-      assertThat(successCount.get()).isEqualTo(threadCount);
       assertThat(resultProduct.getLikeCount()).isZero();
+      assertThat(successCount.get() + failCount.get()).isEqualTo(threadCount);
     }
   }
 }
