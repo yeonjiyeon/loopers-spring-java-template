@@ -7,15 +7,6 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public class OrderV1Dto {
-    public record OrderRequest(
-            List<OrderItemRequest> items
-    ) {
-        public record OrderItemRequest(
-                Long productId,
-                Integer quantity
-        ) {
-        }
-    }
 
     public record OrderResponse(
             Long orderId,

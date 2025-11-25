@@ -14,7 +14,6 @@ import com.loopers.infrastructure.point.PointJpaRepository;
 import com.loopers.infrastructure.product.ProductJpaRepository;
 import com.loopers.infrastructure.supply.SupplyJpaRepository;
 import com.loopers.infrastructure.user.UserJpaRepository;
-import com.loopers.interfaces.api.order.OrderV1Dto;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import com.loopers.utils.DatabaseCleanUp;
@@ -128,10 +127,10 @@ public class OrderFacadeIntegrationTest {
         @Test
         void should_createOrder_when_validRequest() {
             // arrange
-            OrderV1Dto.OrderRequest request = new OrderV1Dto.OrderRequest(
+            OrderRequest request = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 2),
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId2, 1)
+                            new OrderItemRequest(productId1, 2),
+                            new OrderItemRequest(productId2, 1)
                     )
             );
 
@@ -150,9 +149,9 @@ public class OrderFacadeIntegrationTest {
         void should_throwException_when_productIdDoesNotExist() {
             // arrange
             Long nonExistentProductId = 99999L;
-            OrderV1Dto.OrderRequest request = new OrderV1Dto.OrderRequest(
+            OrderRequest request = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(nonExistentProductId, 1)
+                            new OrderItemRequest(nonExistentProductId, 1)
                     )
             );
 
@@ -166,9 +165,9 @@ public class OrderFacadeIntegrationTest {
         @Test
         void should_throwException_when_singleProductStockInsufficient() {
             // arrange
-            OrderV1Dto.OrderRequest request = new OrderV1Dto.OrderRequest(
+            OrderRequest request = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 99999)
+                            new OrderItemRequest(productId1, 99999)
                     )
             );
 
@@ -184,10 +183,10 @@ public class OrderFacadeIntegrationTest {
             // arrange
             // productId1: 재고 100, productId2: 재고 50
             // productId1은 충분하지만 productId2는 부족
-            OrderV1Dto.OrderRequest request = new OrderV1Dto.OrderRequest(
+            OrderRequest request = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 10), // 재고 충분
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId2, 99999) // 재고 부족
+                            new OrderItemRequest(productId1, 10), // 재고 충분
+                            new OrderItemRequest(productId2, 99999) // 재고 부족
                     )
             );
 
@@ -203,10 +202,10 @@ public class OrderFacadeIntegrationTest {
         @Test
         void should_throwException_when_allProductsStockInsufficient() {
             // arrange
-            OrderV1Dto.OrderRequest request = new OrderV1Dto.OrderRequest(
+            OrderRequest request = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 99999),
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId2, 99999)
+                            new OrderItemRequest(productId1, 99999),
+                            new OrderItemRequest(productId2, 99999)
                     )
             );
 
@@ -228,9 +227,9 @@ public class OrderFacadeIntegrationTest {
             productMetricsJpaRepository.save(metrics);
             // Supply는 생성하지 않음
 
-            OrderV1Dto.OrderRequest request = new OrderV1Dto.OrderRequest(
+            OrderRequest request = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(savedProduct.getId(), 1)
+                            new OrderItemRequest(savedProduct.getId(), 1)
                     )
             );
 
@@ -245,17 +244,17 @@ public class OrderFacadeIntegrationTest {
         void should_throwException_when_pointInsufficient() {
             // arrange
             // 포인트를 모두 사용
-            OrderV1Dto.OrderRequest firstOrder = new OrderV1Dto.OrderRequest(
+            OrderRequest firstOrder = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 10)
+                            new OrderItemRequest(productId1, 10)
                     )
             );
             orderFacade.createOrder(userId, firstOrder);
 
             // 포인트 부족한 주문 시도
-            OrderV1Dto.OrderRequest request = new OrderV1Dto.OrderRequest(
+            OrderRequest request = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId2, 1) // 20000원 필요 (부족)
+                            new OrderItemRequest(productId2, 1) // 20000원 필요 (부족)
                     )
             );
 
@@ -271,18 +270,18 @@ public class OrderFacadeIntegrationTest {
         void should_createOrder_when_pointExactlyMatches() {
             // arrange
             // 포인트를 거의 모두 사용
-            OrderV1Dto.OrderRequest firstOrder = new OrderV1Dto.OrderRequest(
+            OrderRequest firstOrder = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 9) // 90000원 사용
+                            new OrderItemRequest(productId1, 9) // 90000원 사용
                     )
             );
             orderFacade.createOrder(userId, firstOrder);
             // 남은 포인트: 10000원
 
             // 정확히 일치하는 주문
-            OrderV1Dto.OrderRequest request = new OrderV1Dto.OrderRequest(
+            OrderRequest request = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 1) // 정확히 10000원
+                            new OrderItemRequest(productId1, 1) // 정확히 10000원
                     )
             );
 
@@ -300,10 +299,10 @@ public class OrderFacadeIntegrationTest {
             // arrange
             // 같은 상품을 여러 번 주문 항목에 포함
             // Note: Collectors.toMap()은 중복 키가 있으면 IllegalStateException을 발생시킴
-            OrderV1Dto.OrderRequest request = new OrderV1Dto.OrderRequest(
+            OrderRequest request = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 2),
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 3) // 중복
+                            new OrderItemRequest(productId1, 2),
+                            new OrderItemRequest(productId1, 3) // 중복
                     )
             );
 
@@ -320,9 +319,9 @@ public class OrderFacadeIntegrationTest {
         void should_throwException_when_userDoesNotExist() {
             // arrange
             String nonExistentUserId = "nonexist";
-            OrderV1Dto.OrderRequest request = new OrderV1Dto.OrderRequest(
+            OrderRequest request = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 1)
+                            new OrderItemRequest(productId1, 1)
                     )
             );
 

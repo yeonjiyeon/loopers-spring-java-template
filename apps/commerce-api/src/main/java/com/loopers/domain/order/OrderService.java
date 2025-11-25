@@ -1,5 +1,7 @@
 package com.loopers.domain.order;
 
+import com.loopers.application.order.OrderItemRequest;
+import com.loopers.domain.product.Product;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
@@ -9,12 +11,30 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Map;
+
 @RequiredArgsConstructor
 @Component
 public class OrderService {
     private final OrderRepository orderRepository;
 
     public Order save(Order order) {
+        return orderRepository.save(order);
+    }
+
+    public Order createOrder(List<OrderItemRequest> OrderItems, Map<Long, Product> productMap, Long userId) {
+        List<OrderItem> orderItems = OrderItems
+                .stream()
+                .map(item -> OrderItem.create(
+                        item.productId(),
+                        productMap.get(item.productId()).getName(),
+                        item.quantity(),
+                        productMap.get(item.productId()).getPrice()
+                ))
+                .toList();
+        Order order = Order.create(userId, orderItems);
+
         return orderRepository.save(order);
     }
 

@@ -1,10 +1,10 @@
 package com.loopers.interfaces.api.order;
 
+import com.loopers.application.order.OrderRequest;
 import com.loopers.interfaces.api.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -23,7 +23,7 @@ public interface OrderV1ApiSpec {
                     name = "주문 요청 정보",
                     description = "주문 생성에 필요한 정보"
             )
-            OrderV1Dto.OrderRequest request
+            OrderRequest request
     );
 
     // /api/v1/orders - GET

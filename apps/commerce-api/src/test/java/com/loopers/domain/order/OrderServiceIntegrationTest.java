@@ -1,6 +1,8 @@
 package com.loopers.domain.order;
 
+import com.loopers.application.order.OrderItemRequest;
 import com.loopers.domain.common.vo.Price;
+import com.loopers.domain.product.Product;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import jakarta.transaction.Transactional;
@@ -12,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,15 +42,17 @@ public class OrderServiceIntegrationTest {
         void should_saveOrder_when_validOrder() {
             // arrange
             Long userId = 1L;
-            List<OrderItem> orderItems = List.of(
-                    OrderItem.create(1L, "상품1", 2, new Price(10000)),
-                    OrderItem.create(2L, "상품2", 1, new Price(20000))
+            List<OrderItemRequest> orderItemRequests = List.of(
+                    new OrderItemRequest(1L, 2),
+                    new OrderItemRequest(2L, 1)
             );
-            Order order = Order.create(userId, orderItems);
-//            when(spyOrderRepository.save(any(Order.class))).thenReturn(order);
+            Map<Long, Product> productMap = Map.of(
+                    1L, Product.create("상품1", 1L, new Price(10000)),
+                    2L, Product.create("상품2", 1L, new Price(20000))
+            );
 
             // act
-            Order result = orderService.save(order);
+            Order result = orderService.createOrder(orderItemRequests, productMap, userId);
 
             // assert
             verify(spyOrderRepository).save(any(Order.class));
@@ -61,14 +66,15 @@ public class OrderServiceIntegrationTest {
         void should_saveOrder_when_singleOrderItem() {
             // arrange
             Long userId = 1L;
-            List<OrderItem> orderItems = List.of(
-                    OrderItem.create(1L, "상품1", 1, new Price(10000))
+            List<OrderItemRequest> orderItemRequests = List.of(
+                    new OrderItemRequest(1L, 1)
             );
-            Order order = Order.create(userId, orderItems);
-//            when(spyOrderRepository.save(any(Order.class))).thenReturn(order);
+            Map<Long, Product> productMap = Map.of(
+                    1L, Product.create("상품1", 1L, new Price(15000))
+            );
 
             // act
-            Order result = orderService.save(order);
+            Order result = orderService.createOrder(orderItemRequests, productMap, userId);
 
             // assert
             verify(spyOrderRepository).save(any(Order.class));

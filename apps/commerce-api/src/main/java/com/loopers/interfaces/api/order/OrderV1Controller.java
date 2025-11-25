@@ -2,6 +2,7 @@ package com.loopers.interfaces.api.order;
 
 import com.loopers.application.order.OrderFacade;
 import com.loopers.application.order.OrderInfo;
+import com.loopers.application.order.OrderRequest;
 import com.loopers.interfaces.api.ApiResponse;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
@@ -22,7 +23,7 @@ public class OrderV1Controller implements OrderV1ApiSpec {
     @Override
     public ApiResponse<OrderV1Dto.OrderResponse> createOrder(
             @RequestHeader(value = "X-USER-ID", required = false) String userId,
-            @RequestBody OrderV1Dto.OrderRequest request
+            @RequestBody OrderRequest request
     ) {
         if (StringUtils.isBlank(userId)) {
             throw new CoreException(ErrorType.BAD_REQUEST);

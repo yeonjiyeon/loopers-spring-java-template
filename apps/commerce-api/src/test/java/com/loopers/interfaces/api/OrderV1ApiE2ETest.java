@@ -1,5 +1,7 @@
 package com.loopers.interfaces.api;
 
+import com.loopers.application.order.OrderItemRequest;
+import com.loopers.application.order.OrderRequest;
 import com.loopers.domain.brand.Brand;
 import com.loopers.domain.common.vo.Price;
 import com.loopers.domain.metrics.product.ProductMetrics;
@@ -155,10 +157,10 @@ public class OrderV1ApiE2ETest {
         @Test
         void returnOrderInfo_whenCreateOrderSuccess() {
             // arrange
-            OrderV1Dto.OrderRequest request = new OrderV1Dto.OrderRequest(
+            OrderRequest request = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 2),
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId2, 1)
+                            new OrderItemRequest(productId1, 2),
+                            new OrderItemRequest(productId2, 1)
                     )
             );
             HttpHeaders headers = createHeaders();
@@ -184,9 +186,9 @@ public class OrderV1ApiE2ETest {
         @Test
         void returnBadRequest_whenStockInsufficient() {
             // arrange
-            OrderV1Dto.OrderRequest request = new OrderV1Dto.OrderRequest(
+            OrderRequest request = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 99999)
+                            new OrderItemRequest(productId1, 99999)
                     )
             );
             HttpHeaders headers = createHeaders();
@@ -206,9 +208,9 @@ public class OrderV1ApiE2ETest {
         void returnNotFoundOrBadRequest_whenProductIdDoesNotExist() {
             // arrange
             Long nonExistentProductId = 99999L;
-            OrderV1Dto.OrderRequest request = new OrderV1Dto.OrderRequest(
+            OrderRequest request = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(nonExistentProductId, 1)
+                            new OrderItemRequest(nonExistentProductId, 1)
                     )
             );
             HttpHeaders headers = createHeaders();
@@ -232,9 +234,9 @@ public class OrderV1ApiE2ETest {
             // arrange
             // 포인트를 모두 사용
             HttpHeaders headers = createHeaders();
-            OrderV1Dto.OrderRequest firstOrder = new OrderV1Dto.OrderRequest(
+            OrderRequest firstOrder = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 10)
+                            new OrderItemRequest(productId1, 10)
                     )
             );
             ParameterizedTypeReference<ApiResponse<OrderV1Dto.OrderResponse>> responseType = new ParameterizedTypeReference<>() {
@@ -242,9 +244,9 @@ public class OrderV1ApiE2ETest {
             testRestTemplate.exchange(ENDPOINT_ORDERS, HttpMethod.POST, new HttpEntity<>(firstOrder, headers), responseType);
 
             // 포인트 부족한 주문 시도
-            OrderV1Dto.OrderRequest request = new OrderV1Dto.OrderRequest(
+            OrderRequest request = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId2, 99999)
+                            new OrderItemRequest(productId2, 99999)
                     )
             );
 
@@ -260,9 +262,9 @@ public class OrderV1ApiE2ETest {
         @Test
         void returnBadRequest_whenXUserIdHeaderIsMissing() {
             // arrange
-            OrderV1Dto.OrderRequest request = new OrderV1Dto.OrderRequest(
+            OrderRequest request = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 1)
+                            new OrderItemRequest(productId1, 1)
                     )
             );
 
@@ -280,9 +282,9 @@ public class OrderV1ApiE2ETest {
         @Test
         void returnBadRequest_whenXUserIdHeaderIsEmpty() {
             // arrange
-            OrderV1Dto.OrderRequest request = new OrderV1Dto.OrderRequest(
+            OrderRequest request = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 1)
+                            new OrderItemRequest(productId1, 1)
                     )
             );
             HttpHeaders headers = new HttpHeaders();
@@ -302,9 +304,9 @@ public class OrderV1ApiE2ETest {
         @Test
         void returnBadRequest_whenXUserIdHeaderIsBlank() {
             // arrange
-            OrderV1Dto.OrderRequest request = new OrderV1Dto.OrderRequest(
+            OrderRequest request = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 1)
+                            new OrderItemRequest(productId1, 1)
                     )
             );
             HttpHeaders headers = new HttpHeaders();
@@ -324,9 +326,9 @@ public class OrderV1ApiE2ETest {
         @Test
         void returnNotFound_whenUserIdDoesNotExist() {
             // arrange
-            OrderV1Dto.OrderRequest request = new OrderV1Dto.OrderRequest(
+            OrderRequest request = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 1)
+                            new OrderItemRequest(productId1, 1)
                     )
             );
             HttpHeaders headers = new HttpHeaders();
@@ -347,9 +349,9 @@ public class OrderV1ApiE2ETest {
         void returnNotFound_whenProductIdDoesNotExist() {
             // arrange
             Long nonExistentProductId = 99999L;
-            OrderV1Dto.OrderRequest request = new OrderV1Dto.OrderRequest(
+            OrderRequest request = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(nonExistentProductId, 1)
+                            new OrderItemRequest(nonExistentProductId, 1)
                     )
             );
             HttpHeaders headers = createHeaders();
@@ -370,10 +372,10 @@ public class OrderV1ApiE2ETest {
             // arrange
             // productId1: 재고 100, productId2: 재고 50
             // productId1은 충분하지만 productId2는 부족
-            OrderV1Dto.OrderRequest request = new OrderV1Dto.OrderRequest(
+            OrderRequest request = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 10), // 재고 충분
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId2, 99999) // 재고 부족
+                            new OrderItemRequest(productId1, 10), // 재고 충분
+                            new OrderItemRequest(productId2, 99999) // 재고 부족
                     )
             );
             HttpHeaders headers = createHeaders();
@@ -394,10 +396,10 @@ public class OrderV1ApiE2ETest {
         @Test
         void returnBadRequest_whenAllProductsStockInsufficient() {
             // arrange
-            OrderV1Dto.OrderRequest request = new OrderV1Dto.OrderRequest(
+            OrderRequest request = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 99999),
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId2, 99999)
+                            new OrderItemRequest(productId1, 99999),
+                            new OrderItemRequest(productId2, 99999)
                     )
             );
             HttpHeaders headers = createHeaders();
@@ -419,9 +421,9 @@ public class OrderV1ApiE2ETest {
             // arrange
             // 포인트를 거의 모두 사용
             HttpHeaders headers = createHeaders();
-            OrderV1Dto.OrderRequest firstOrder = new OrderV1Dto.OrderRequest(
+            OrderRequest firstOrder = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 9) // 90000원 사용
+                            new OrderItemRequest(productId1, 9) // 90000원 사용
                     )
             );
             ParameterizedTypeReference<ApiResponse<OrderV1Dto.OrderResponse>> responseType = new ParameterizedTypeReference<>() {
@@ -430,9 +432,9 @@ public class OrderV1ApiE2ETest {
             // 남은 포인트: 10000원
 
             // 정확히 일치하는 주문
-            OrderV1Dto.OrderRequest request = new OrderV1Dto.OrderRequest(
+            OrderRequest request = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 1) // 정확히 10000원
+                            new OrderItemRequest(productId1, 1) // 정확히 10000원
                     )
             );
 
@@ -455,10 +457,10 @@ public class OrderV1ApiE2ETest {
             // arrange
             // 같은 상품을 여러 번 주문 항목에 포함
             // Note: Collectors.toMap()은 중복 키가 있으면 IllegalStateException을 발생시킴
-            OrderV1Dto.OrderRequest request = new OrderV1Dto.OrderRequest(
+            OrderRequest request = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 2),
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 3) // 중복
+                            new OrderItemRequest(productId1, 2),
+                            new OrderItemRequest(productId1, 3) // 중복
                     )
             );
             HttpHeaders headers = createHeaders();
@@ -496,9 +498,9 @@ public class OrderV1ApiE2ETest {
             Supply initialSupply = supplyJpaRepository.findByProductId(productId1).orElseThrow();
             int initialStock = initialSupply.getStock().quantity();
 
-            OrderV1Dto.OrderRequest request = new OrderV1Dto.OrderRequest(
+            OrderRequest request = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 1)
+                            new OrderItemRequest(productId1, 1)
                     )
             );
             HttpHeaders headers = new HttpHeaders();
@@ -529,9 +531,9 @@ public class OrderV1ApiE2ETest {
 
             // 포인트를 거의 모두 사용
             HttpHeaders headers = createHeaders();
-            OrderV1Dto.OrderRequest firstOrder = new OrderV1Dto.OrderRequest(
+            OrderRequest firstOrder = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 9) // 90000원 사용
+                            new OrderItemRequest(productId1, 9) // 90000원 사용
                     )
             );
             ParameterizedTypeReference<ApiResponse<OrderV1Dto.OrderResponse>> responseType = new ParameterizedTypeReference<>() {
@@ -540,9 +542,9 @@ public class OrderV1ApiE2ETest {
             // 남은 포인트: 10000원
 
             // 포인트 부족한 주문 시도 (재고는 충분)
-            OrderV1Dto.OrderRequest request = new OrderV1Dto.OrderRequest(
+            OrderRequest request = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 2) // 20000원 필요 (부족)
+                            new OrderItemRequest(productId1, 2) // 20000원 필요 (부족)
                     )
             );
 
@@ -570,10 +572,10 @@ public class OrderV1ApiE2ETest {
             int initialStock2 = initialSupply2.getStock().quantity();
 
             // productId1은 충분하지만 productId2는 부족한 주문
-            OrderV1Dto.OrderRequest request = new OrderV1Dto.OrderRequest(
+            OrderRequest request = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 10), // 재고 충분
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId2, 99999) // 재고 부족
+                            new OrderItemRequest(productId1, 10), // 재고 충분
+                            new OrderItemRequest(productId2, 99999) // 재고 부족
                     )
             );
             HttpHeaders headers = createHeaders();
@@ -606,9 +608,9 @@ public class OrderV1ApiE2ETest {
             // arrange
             HttpHeaders headers = createHeaders();
             // 주문 생성
-            OrderV1Dto.OrderRequest orderRequest = new OrderV1Dto.OrderRequest(
+            OrderRequest orderRequest = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 1)
+                            new OrderItemRequest(productId1, 1)
                     )
             );
             ParameterizedTypeReference<ApiResponse<OrderV1Dto.OrderResponse>> orderResponseType = new ParameterizedTypeReference<>() {
@@ -702,9 +704,9 @@ public class OrderV1ApiE2ETest {
         void setupOrder() {
             // 주문 생성
             HttpHeaders headers = createHeaders();
-            OrderV1Dto.OrderRequest orderRequest = new OrderV1Dto.OrderRequest(
+            OrderRequest orderRequest = new OrderRequest(
                     List.of(
-                            new OrderV1Dto.OrderRequest.OrderItemRequest(productId1, 1)
+                            new OrderItemRequest(productId1, 1)
                     )
             );
             ParameterizedTypeReference<ApiResponse<OrderV1Dto.OrderResponse>> orderResponseType = new ParameterizedTypeReference<>() {
