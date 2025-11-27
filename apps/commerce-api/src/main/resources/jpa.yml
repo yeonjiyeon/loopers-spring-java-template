@@ -1,0 +1,19 @@
+datasource:
+  mysql-jpa:
+    main:
+      jdbc-url: "jdbc:mysql://127.0.0.1:3306/loopers?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true"
+      username: application
+      password: application
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      maximum-pool-size: 10
+      minimum-idle: 5
+      pool-name: MyHikariCP
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
