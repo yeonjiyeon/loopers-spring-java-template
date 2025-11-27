@@ -4,6 +4,7 @@ import com.loopers.domain.BaseEntity;
 import com.loopers.domain.money.Money;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -26,7 +27,7 @@ public class Product extends BaseEntity {
   @Column(nullable = false)
   private String description;
 
-  @Column(nullable = false)
+  @AttributeOverride(name = "value", column = @Column(name = "price"))
   @Embedded
   private Money price;
 
