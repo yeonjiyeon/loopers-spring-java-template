@@ -56,7 +56,7 @@ class ProductFacadeIntegrationTest {
     Pageable pageable = PageRequest.of(0, 20, Sort.by(Sort.Direction.DESC, "createdAt"));
 
     // act
-    Page<ProductInfo> result = productFacade.getProductInfo(pageable);
+    Page<ProductInfo> result = productFacade.getProductsInfo(pageable);
 
     // assert
     assertAll(
@@ -72,7 +72,7 @@ class ProductFacadeIntegrationTest {
     Pageable pageable = PageRequest.of(0, 10);
 
     // act
-    Page<ProductInfo> result = productFacade.getProductInfo(pageable);
+    Page<ProductInfo> result = productFacade.getProductsInfo(pageable);
 
     // assert
     assertThat(result.isEmpty()).isTrue();
