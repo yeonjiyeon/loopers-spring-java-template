@@ -23,7 +23,6 @@ public class LikeFacade {
   public LikeInfo like(long userId, long productId) {
     Optional<Like> existingLike = likeService.findLike(userId, productId);
 
-
     if (existingLike.isPresent()) {
       Product product = productService.getProduct(productId);
       return LikeInfo.from(existingLike.get(), product.getLikeCount());
@@ -31,11 +30,12 @@ public class LikeFacade {
 
     for (int i = 0; i < RETRY_COUNT; i++) {
       try {
+        return transactionTemplate.execute(status -> {
+          Like newLike = likeService.save(userId, productId);
+          int updatedLikeCount = productService.increaseLikeCount(productId);
+          return LikeInfo.from(newLike, updatedLikeCount);
+        });
 
-        Like newLike = likeService.save(userId, productId);
-        int updatedLikeCount = productService.increaseLikeCount(productId);
-
-        return LikeInfo.from(newLike, updatedLikeCount);
       } catch (ObjectOptimisticLockingFailureException e) {
         if (i == RETRY_COUNT - 1) {
           throw e;
@@ -43,7 +43,6 @@ public class LikeFacade {
         sleep(50);
       }
     }
-
     throw new IllegalStateException("좋아요 처리 재시도 횟수를 초과했습니다.");
   }
 
