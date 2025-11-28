@@ -11,16 +11,25 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class ProductFacade {
+
   private final ProductService productService;
   private final BrandService brandService;
 
-  public Page<ProductInfo> getProductInfo(Pageable pageable) {
+  public Page<ProductInfo> getProductsInfo(Pageable pageable) {
     Page<Product> products = productService.getProducts(pageable);
     return products.map(product -> {
       String brandName = brandService.getBrand(product.getBrandId())
           .getName();
       return ProductInfo.from(product, brandName);
     });
+  }
+
+  public ProductInfo getProductInfo(long id) {
+    Product product = productService.getProduct(id);
+    String brandName = brandService.getBrand(product.getBrandId())
+        .getName();
+
+    return ProductInfo.from(product, brandName);
   }
 
 }
