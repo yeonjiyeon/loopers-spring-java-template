@@ -24,6 +24,31 @@ spring:
       - logging.yml
       - monitoring.yml
 
+resilience4j:
+  # Retry
+  retry:
+    instances:
+      pgRetry:
+        max-attempts: 3
+        wait-duration: 1000ms
+        retry-exceptions:
+          - java.io.IOException
+          - java.util.concurrent.TimeoutException
+          - java.net.ConnectException
+
+  # CircuitBreaker
+  circuitbreaker:
+    configs:
+      default:
+        register-health-indicator: true
+    instances:
+      simpleCircuitBreakerConfig:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3
+
 springdoc:
   use-fqn: true
   swagger-ui:
