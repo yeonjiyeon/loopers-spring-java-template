@@ -5,7 +5,8 @@ import com.loopers.domain.order.OrderCommand.Item;
 import com.loopers.domain.order.OrderCommand.PlaceOrder;
 import com.loopers.domain.order.OrderItem;
 import com.loopers.domain.order.OrderService;
-import com.loopers.domain.point.PointService;
+import com.loopers.domain.payment.Payment;
+import com.loopers.domain.payment.PaymentService;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductService;
 import com.loopers.domain.user.User;
@@ -27,7 +28,7 @@ public class OrderFacade {
   private final ProductService productService;
   private final UserService userService;
   private final OrderService orderService;
-  private final PointService pointService;
+  private final PaymentService paymentService;
 
   @Transactional
   public OrderInfo placeOrder(PlaceOrder command) {
@@ -43,12 +44,16 @@ public class OrderFacade {
 
     List<OrderItem> orderItems = buildOrderItems(products, command.items());
     Order order = orderService.createOrder(user.getId(), orderItems);
-    long totalAmount = order.getTotalAmount().getValue();
 
     productService.deductStock(products, orderItems);
-    pointService.deductPoint(user, totalAmount);
 
-    return OrderInfo.from(order);
+    Payment payment = paymentService.processPayment(
+        user,
+        order,
+        command.cardType(),
+        command.cardNo()
+    );
+    return OrderInfo.from(order, payment);
   }
 
   private List<OrderItem> buildOrderItems(List<Product> products, List<Item> items) {

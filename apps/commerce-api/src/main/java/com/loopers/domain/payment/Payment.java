@@ -13,9 +13,11 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import java.util.UUID;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
 
+@Getter
 @Entity
 @Table(name = "payment")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -30,8 +32,9 @@ public class Payment extends BaseEntity {
   @Column(name = "transaction_id", nullable = false, unique = true)
   private String transactionId;//멱등키
 
+  @Enumerated(EnumType.STRING)
   @Column(name = "card_type", nullable = false)
-  private String cardType;
+  private CardType cardType;
 
   @Column(name = "card_no", nullable = false)
   private String cardNo;
@@ -47,8 +50,8 @@ public class Payment extends BaseEntity {
   @Column(name = "pg_txn_id")
   private String pgTxnId;
 
-  public Payment(Long orderId, Long userId, Money amount, String cardType, String cardNo) {
-    validateConstructor(orderId, userId, amount, cardType, cardNo);
+  public Payment(Long orderId, Long userId, Money amount, CardType cardType, String cardNo) {
+    validateConstructor(orderId, userId, amount, cardNo);
 
     this.orderId = orderId;
     this.userId = userId;
@@ -60,7 +63,7 @@ public class Payment extends BaseEntity {
     this.transactionId = UUID.randomUUID().toString();
   }
 
-  private void validateConstructor(Long orderId, Long userId, Money amount, String cardType, String cardNo) {
+  private void validateConstructor(Long orderId, Long userId, Money amount, String cardNo) {
     if (orderId == null) {
       throw new CoreException(ErrorType.BAD_REQUEST, "주문 정보는 필수입니다.");
     }
@@ -70,11 +73,18 @@ public class Payment extends BaseEntity {
     if (amount == null) {
       throw new CoreException(ErrorType.BAD_REQUEST, "결제 금액은 필수입니다.");
     }
-    if (!StringUtils.hasText(cardType)) {
-      throw new CoreException(ErrorType.BAD_REQUEST, "카드 종류는 필수입니다.");
-    }
     if (!StringUtils.hasText(cardNo)) {
       throw new CoreException(ErrorType.BAD_REQUEST, "카드 번호는 필수입니다.");
     }
   }
+
+  public void completePayment(String pgTxnId) {
+    this.pgTxnId = pgTxnId;
+    this.status = PaymentStatus.PAID;
+  }
+
+  public void failPayment() {
+    this.status = PaymentStatus.FAILED;
+  }
+
 }
