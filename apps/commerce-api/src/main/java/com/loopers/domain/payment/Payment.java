@@ -79,6 +79,9 @@ public class Payment extends BaseEntity {
   }
 
   public void completePayment(String pgTxnId) {
+    if (this.status == PaymentStatus.PAID || this.status == PaymentStatus.CANCELLED) {
+      return;
+    }
     this.pgTxnId = pgTxnId;
     this.status = PaymentStatus.PAID;
   }
