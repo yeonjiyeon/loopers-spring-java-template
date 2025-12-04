@@ -20,16 +20,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class LoopersPgExecutorTest {
 
   @Mock
-  private PgClient pgClient; // 가짜 PG 클라이언트
+  private PgClient pgClient;
 
   @InjectMocks
-  private LoopersPgExecutor loopersPgExecutor; // 테스트 대상
+  private LoopersPgExecutor loopersPgExecutor;
 
   @Test
   @DisplayName("PG 승인 요청이 성공하면 트랜잭션 키를 반환한다")
   void execute_success() {
     // given
-    // 1. 테스트용 결제 정보 가짜 생성 (필요한 필드만 Mocking하거나 객체 생성)
     Payment mockPayment = org.mockito.Mockito.mock(Payment.class);
     given(mockPayment.getTransactionId()).willReturn("ORDER-123");
     given(mockPayment.getCardType()).willReturn(com.loopers.domain.payment.CardType.SAMSUNG);

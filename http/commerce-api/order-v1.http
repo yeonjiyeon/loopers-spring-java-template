@@ -1,0 +1,19 @@
+### 주문 생성 및 결제 요청
+POST {{commerce-api}}/api/v1/orders
+Content-Type: application/json
+X-USER-ID: 1
+
+{
+  "orderItems": [
+    {
+      "productId": 1,
+      "quantity": 2
+    },
+    {
+      "productId": 2,
+      "quantity": 1
+    }
+  ],
+  "cardType": "KB",
+  "cardNo": "1234-1234-1234-1234"
+}
