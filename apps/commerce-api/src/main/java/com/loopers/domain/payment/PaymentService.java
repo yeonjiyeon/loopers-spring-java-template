@@ -11,17 +11,29 @@ import org.springframework.stereotype.Component;
 public class PaymentService {
 
   private final PaymentRepository paymentRepository;
+  private final PaymentExecutor paymentExecutor;
 
   @Transactional
-  public Payment createPendingPayment(User user, Order order, String cardType, String cardNo) {
+  public Payment processPayment(User user, Order order, String cardType, String cardNo) {
     Payment payment = new Payment(
         order.getId(),
         user.getId(),
         order.getTotalAmount(),
-        cardType,
+        CardType.valueOf(cardType),
         cardNo
     );
 
-    return paymentRepository.save(payment);
+    paymentRepository.save(payment);
+    try {
+      String pgTxnId = paymentExecutor.execute(payment);
+
+      payment.completePayment(pgTxnId);
+
+    } catch (Exception e) {
+      payment.failPayment();
+      throw e;
+    }
+
+    return payment;
   }
 }

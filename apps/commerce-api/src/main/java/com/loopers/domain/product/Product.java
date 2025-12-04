@@ -91,6 +91,12 @@ public class Product extends BaseEntity {
   }
 
   public void deductStock(int quantity) {
+    if (quantity <= 0) {
+      throw new CoreException(ErrorType.BAD_REQUEST, "차감할 재고 수량은 0보다 커야 합니다.");
+    }
+    if (this.stock - quantity < 0) {
+      throw new CoreException(ErrorType.BAD_REQUEST, "재고가 부족합니다.");
+    }
     this.stock -= quantity;
   }
 
@@ -100,7 +106,7 @@ public class Product extends BaseEntity {
   }
 
   public int decreaseLikeCount() {
-    if (this.likeCount < 0) {
+    if (this.likeCount <= 0) {
       throw new CoreException(ErrorType.BAD_REQUEST, "좋아요수는 0보다 작을 수 없습니다.");
     }
     this.likeCount--;
