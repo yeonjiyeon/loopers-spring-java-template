@@ -21,7 +21,7 @@ dependencies {
     testImplementation(testFixtures(project(":modules:redis")))
 
     // Resilience4j (Spring Boot 3.x 기준)
-    implementation("io.github.resilience4j:resilience4j-spring-boot3:2.2.0")
+    implementation("io.github.resilience4j:resilience4j-spring-boot3")
 
     // AOP
     implementation("org.springframework.boot:spring-boot-starter-aop")
