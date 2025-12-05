@@ -10,19 +10,15 @@ public record OrderInfo(
     Long orderId,
     Long userId,
     List<OrderItemInfo> items,
-    long totalAmount,
-    String transactionId,
-    String paymentStatus
+    long totalAmount
 ) {
 
-  public static OrderInfo from(Order order, Payment payment) {
+  public static OrderInfo from(Order order) {
     return new OrderInfo(
         order.getId(),
         order.getUserId(),
         order.getOrderItems().stream().map(OrderItemInfo::from).toList(),
-        order.getTotalAmount().getValue(),
-        payment.getTransactionId(),
-        payment.getStatus().name()
+        order.getTotalAmount().getValue()
     );
   }
 

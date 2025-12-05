@@ -6,9 +6,7 @@ public class OrderCommand {
 
   public record PlaceOrder(
       Long userId,
-      List<Item> items,
-      String cardType,
-      String cardNo
+      List<Item> items
   ) {
 
   }

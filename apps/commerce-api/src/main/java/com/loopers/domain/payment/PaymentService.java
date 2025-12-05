@@ -1,39 +1,55 @@
 package com.loopers.domain.payment;
 
-import com.loopers.domain.order.Order;
-import com.loopers.domain.user.User;
-import jakarta.transaction.Transactional;
+import com.loopers.domain.money.Money;
+import com.loopers.support.error.CoreException;
+import com.loopers.support.error.ErrorType;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Component
+@Transactional(readOnly = true)
 public class PaymentService {
 
   private final PaymentRepository paymentRepository;
-  private final PaymentExecutor paymentExecutor;
+
+  public Optional<Payment> findValidPayment(Long orderId) {
+    return paymentRepository.findByOrderId(orderId)
+        .filter(Payment::isProcessingOrCompleted);
+  }
 
   @Transactional
-  public Payment processPayment(User user, Order order, String cardType, String cardNo) {
+  public Payment createPendingPayment(Long userId, Long orderId, Money amount, CardType cardType, String cardNo) {
     Payment payment = new Payment(
-        order.getId(),
-        user.getId(),
-        order.getTotalAmount(),
-        CardType.valueOf(cardType),
+        orderId,
+        userId,
+        amount,
+        cardType,
         cardNo
     );
-
-    paymentRepository.save(payment);
-    try {
-      String pgTxnId = paymentExecutor.execute(payment);
-
-      payment.completePayment(pgTxnId);
-
-    } catch (Exception e) {
-      payment.failPayment();
-      throw e;
-    }
-
-    return payment;
+    return paymentRepository.save(payment);
   }
+
+  @Transactional
+  public void registerPgToken(Payment payment, String pgTxnId) {
+    payment.setPgTxnId(pgTxnId);
+  }
+
+  @Transactional
+  public void failPayment(Payment payment) {
+    payment.failPayment();
+  }
+
+  public Payment getPaymentByPgTxnId(String pgTxnId) {
+    return paymentRepository.findByPgTxnId(pgTxnId)
+        .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "결제 정보를 찾을 수 없습니다."));
+  }
+
+  @Transactional
+  public void completePayment(Payment payment) {
+    payment.completePayment();
+  }
+
 }
