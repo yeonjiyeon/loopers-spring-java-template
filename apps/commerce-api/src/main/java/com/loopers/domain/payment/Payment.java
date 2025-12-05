@@ -78,16 +78,25 @@ public class Payment extends BaseEntity {
     }
   }
 
-  public void completePayment(String pgTxnId) {
+  public void completePayment() {
     if (this.status == PaymentStatus.PAID || this.status == PaymentStatus.CANCELLED) {
       return;
     }
-    this.pgTxnId = pgTxnId;
     this.status = PaymentStatus.PAID;
   }
 
   public void failPayment() {
+    if (this.status == PaymentStatus.PAID) {
+      throw new CoreException(ErrorType.BAD_REQUEST, "이미 성공한 결제는 실패 처리할 수 없습니다.");
+    }
     this.status = PaymentStatus.FAILED;
   }
 
+  public boolean isProcessingOrCompleted() {
+    return this.status == PaymentStatus.PAID || this.status == PaymentStatus.READY;
+  }
+
+  public void setPgTxnId(String pgTxnId) {
+    this.pgTxnId = pgTxnId;
+  }
 }

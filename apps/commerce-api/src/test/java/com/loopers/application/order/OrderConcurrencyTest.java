@@ -1,16 +1,10 @@
 package com.loopers.application.order;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
 import com.loopers.domain.money.Money;
 import com.loopers.domain.order.OrderCommand.Item;
 import com.loopers.domain.order.OrderCommand.PlaceOrder;
-import com.loopers.domain.payment.Payment;
-import com.loopers.domain.payment.PaymentService;
-import com.loopers.domain.payment.PaymentStatus;
 import com.loopers.domain.point.Point;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.user.User;
@@ -30,7 +24,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest
 class OrderConcurrencyTest {
@@ -47,9 +40,6 @@ class OrderConcurrencyTest {
   @Autowired
   private ProductJpaRepository productJpaRepository;
 
-  @MockitoBean
-  private PaymentService paymentService;
-
   @AfterEach
   void tearDown() {
     userJpaRepository.deleteAll();
@@ -65,8 +55,6 @@ class OrderConcurrencyTest {
 
     @BeforeEach
     void setUp() {
-      setupPaymentMock();
-
       User user = new User("testUser", "test@email.com", "1990-01-01", User.Gender.MALE,
           new Point(10000L));
       this.savedUser = userJpaRepository.saveAndFlush(user);
@@ -94,7 +82,8 @@ class OrderConcurrencyTest {
           .mapToObj(i -> CompletableFuture.runAsync(() -> {
             try {
               Product targetProduct = distinctProducts.get(i);
-              PlaceOrder command = createOrderCommand(savedUser.getId(), targetProduct.getId(), 1);
+              PlaceOrder command = new PlaceOrder(savedUser.getId(),
+                  List.of(new Item(targetProduct.getId(), 1)));
 
               orderFacade.placeOrder(command);
 
@@ -110,19 +99,11 @@ class OrderConcurrencyTest {
 
       // assert
       User findUser = userRepository.findById(savedUser.getId()).orElseThrow();
-      long expectedPoint = 10000L;
+      long expectedPoint = 10000L - (1000L * threadCount);
 
       assertThat(successCount.get()).isEqualTo(threadCount);
       assertThat(findUser.getPoint().getAmount()).isEqualTo(expectedPoint);
     }
-  }
-
-  private void setupPaymentMock() {
-    Payment mockPayment = mock(Payment.class);
-    given(mockPayment.getStatus()).willReturn(PaymentStatus.READY);
-
-    given(paymentService.processPayment(any(), any(), any(), any()))
-        .willReturn(mockPayment);
   }
 
   @Nested
@@ -133,8 +114,6 @@ class OrderConcurrencyTest {
 
     @BeforeEach
     void setUp() {
-      setupPaymentMock();
-
       Product product = new Product(1L, "인기상품", "설명", new Money(1000L), 100);
       this.savedProduct = productJpaRepository.saveAndFlush(product);
     }
@@ -162,7 +141,8 @@ class OrderConcurrencyTest {
       List<CompletableFuture<Void>> futures = IntStream.range(0, threadCount)
           .mapToObj(i -> CompletableFuture.runAsync(() -> {
             try {
-              PlaceOrder command = createOrderCommand(multiUsers.get(i).getId(), savedProduct.getId(), 1);
+              PlaceOrder command = new PlaceOrder(multiUsers.get(i).getId(),
+                  List.of(new Item(savedProduct.getId(), 1)));
 
               orderFacade.placeOrder(command);
 
@@ -183,14 +163,5 @@ class OrderConcurrencyTest {
       System.out.println("성공: " + successCount.get() + ", 충돌 실패: " + failCount.get());
       assertThat(findProduct.getStock()).isEqualTo(expectedStock);
     }
-  }
-
-  private PlaceOrder createOrderCommand(Long userId, Long productId, int quantity) {
-    return new PlaceOrder(
-        userId,
-        List.of(new Item(productId, quantity)),
-        "SAMSUNG",
-        "1234-5678-1234-5678"
-    );
   }
 }

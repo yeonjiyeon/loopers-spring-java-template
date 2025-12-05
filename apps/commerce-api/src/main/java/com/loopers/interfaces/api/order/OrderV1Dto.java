@@ -2,7 +2,6 @@ package com.loopers.interfaces.api.order;
 
 import com.loopers.application.order.OrderInfo;
 import com.loopers.domain.order.OrderCommand;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -11,13 +10,7 @@ import java.util.List;
 public class OrderV1Dto {
   public record OrderRequest(
       @NotEmpty(message = "주문 상품은 필수입니다.")
-      List<OrderItemRequest> items,
-
-      @NotBlank(message = "카드 종류는 필수입니다.")
-      String cardType,
-
-      @NotBlank(message = "카드 번호는 필수입니다.")
-      String cardNo
+      List<OrderItemRequest> items
   ) {
 
     public OrderCommand.PlaceOrder toCommand(Long userId) {
@@ -27,9 +20,7 @@ public class OrderV1Dto {
 
       return new OrderCommand.PlaceOrder(
           userId,
-          commandItems,
-          cardType,
-          cardNo
+          commandItems
       );
     }
   }
@@ -42,18 +33,14 @@ public class OrderV1Dto {
   public record OrderResponse(
       Long orderId,
       Long userId,
-      long totalPrice,
-      String transactionId,
-      String paymentStatus
+      long totalPrice
   ) {
 
     public static OrderResponse from(OrderInfo response) {
       return new OrderResponse(
           response.orderId(),
           response.userId(),
-          response.totalAmount(),
-          response.transactionId(), 
-          response.paymentStatus()
+          response.totalAmount()
       );
     }
   }

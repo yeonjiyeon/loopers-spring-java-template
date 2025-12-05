@@ -1,5 +1,7 @@
 package com.loopers.infrastructure.pg;
 
+import java.util.List;
+
 public class PgV1Dto {
 
   public record PgApiResponse<T>(
@@ -20,5 +22,16 @@ public class PgV1Dto {
       String transactionKey,
       String status,
       String reason
+  ) {}
+
+  public record PgOrderResponse(
+      List<PgDetail> transactions
+  ) {}
+
+  public record PgDetail(
+      String transactionKey,
+      String paymentKey,
+      String orderId,
+      String status
   ) {}
 }
