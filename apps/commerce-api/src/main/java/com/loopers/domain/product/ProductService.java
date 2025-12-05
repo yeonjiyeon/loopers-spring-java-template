@@ -1,8 +1,10 @@
 package com.loopers.domain.product;
 
 import com.loopers.domain.order.OrderItem;
+import com.loopers.support.cache.RedisCacheHandler;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -18,19 +20,38 @@ public class ProductService {
 
   private final ProductRepository productRepository;
 
+  private final RedisCacheHandler redisCacheHandler;
 
   public Page<Product> getProducts(Pageable pageable) {
-    return productRepository.findAll(pageable);
+    String key = makeCacheKey("product:list", pageable);
+    return redisCacheHandler.getOrLoad(
+        key,
+        Duration.ofMinutes(5),
+        Page.class,
+        () -> productRepository.findAll(pageable)
+    );
   }
 
   @Transactional
   public Product getProduct(Long id) {
-    return productRepository.findById(id).orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "상품을 찾을 수 없습니다."));
+    String key = "product:detail:" + id;
+    return redisCacheHandler.getOrLoad(
+        key,
+        Duration.ofMinutes(10),
+        Product.class,
+        () -> productRepository.findById(id)
+            .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "상품을 찾을 수 없습니다."))
+    );
   }
 
   public Page<Product> getProductsByBrandId(Long brandId, Pageable pageable) {
-
-    return productRepository.findByBrandId(brandId, pageable);
+    String key = makeCacheKey("product:list:brand:" + brandId, pageable);
+    return redisCacheHandler.getOrLoad(
+        key,
+        Duration.ofMinutes(5),
+        Page.class,
+        () -> productRepository.findByBrandId(brandId, pageable)
+    );
   }
 
 
@@ -68,5 +89,19 @@ public class ProductService {
         .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "상품을 찾을 수 없습니다."));
 
     return product.decreaseLikeCount();
+  }
+
+  private String makeCacheKey(String prefix, Pageable pageable) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(prefix);
+    sb.append(":page:").append(pageable.getPageNumber());
+    sb.append(":size:").append(pageable.getPageSize());
+
+    if (pageable.getSort().isSorted()) {
+      pageable.getSort().forEach(order ->
+          sb.append(":sort:").append(order.getProperty()).append(",").append(order.getDirection())
+      );
+    }
+    return sb.toString();
   }
 }
