@@ -6,6 +6,7 @@ public class OrderCommand {
 
   public record PlaceOrder(
       Long userId,
+      Long couponId,
       List<Item> items
   ) {
 
