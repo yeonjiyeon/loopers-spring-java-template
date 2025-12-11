@@ -2,9 +2,9 @@ package com.loopers.domain.coupon;
 
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Component
@@ -18,22 +18,37 @@ public class CouponService {
         .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "쿠폰을 찾을 수 없습니다."));
   }
 
-  @Transactional
-  public CouponDiscountResult useCouponAndCalculateDiscount(
+  @Transactional(readOnly = true)
+  public long calculateDiscountAmount(
       Long couponId,
       long totalOrderAmount
   ) {
     Coupon coupon = couponRepository.findById(couponId)
         .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "쿠폰을 찾을 수 없습니다."));
 
-    try {
-      coupon.use();
-    } catch (CoreException e) {
-      throw new CoreException(ErrorType.BAD_REQUEST, "이미 사용되었거나 사용할 수 없는 쿠폰입니다.");
+    if (!coupon.canUse()) {
+      throw new CoreException(ErrorType.BAD_REQUEST, "사용할 수 없는 쿠폰입니다.");
     }
 
-    long discountAmount = coupon.calculateDiscountAmount(totalOrderAmount);
+    return coupon.calculateDiscountAmount(totalOrderAmount);
+  }
 
-    return new CouponDiscountResult(discountAmount, couponId);
+  @Transactional
+  public void reserveCoupon(Long couponId) {
+    Coupon coupon = couponRepository.findById(couponId)
+        .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "쿠폰을 찾을 수 없습니다."));
+
+    try {
+      coupon.reserve();
+    } catch (CoreException e) {
+      throw new CoreException(ErrorType.BAD_REQUEST, "쿠폰 예약에 실패했습니다.");
+    }
+  }
+
+  @Transactional
+  public void confirmCouponUsage(Long couponId) {
+    Coupon coupon = couponRepository.findById(couponId)
+        .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "쿠폰을 찾을 수 없습니다."));
+    coupon.confirmUse();
   }
 }
