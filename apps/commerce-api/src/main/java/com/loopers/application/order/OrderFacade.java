@@ -1,6 +1,5 @@
 package com.loopers.application.order;
 
-import com.loopers.domain.coupon.CouponDiscountResult;
 import com.loopers.domain.coupon.CouponService;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderCommand.Item;
@@ -9,7 +8,6 @@ import com.loopers.domain.order.OrderItem;
 import com.loopers.domain.order.OrderService;
 import com.loopers.domain.payment.Payment;
 import com.loopers.domain.payment.PaymentProcessor;
-import com.loopers.domain.point.PointService;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductService;
 import com.loopers.domain.user.User;
@@ -31,7 +29,6 @@ public class OrderFacade {
   private final ProductService productService;
   private final UserService userService;
   private final OrderService orderService;
-  private final PointService pointService;
   private final CouponService couponService;
   private final List<PaymentProcessor> paymentProcessors;
 
@@ -54,18 +51,18 @@ public class OrderFacade {
     long finalPaymentAmount = totalAmount;
 
     if (command.couponId() != null) {
-      CouponDiscountResult discountResult = couponService.useCouponAndCalculateDiscount(
+      long disCountAmount = couponService.calculateDiscountAmount(
           command.couponId(),
           totalAmount
       );
 
-      finalPaymentAmount -= discountResult.discountAmount();
+      finalPaymentAmount -= disCountAmount;
     }
 
     productService.deductStock(products, orderItems);
 
     PaymentProcessor processor = paymentProcessors.stream()
-        .filter(p -> p.supports(command.paymentType())) // command에 paymentType 필드 추가 필요
+        .filter(p -> p.supports(command.paymentType()))
         .findFirst()
         .orElseThrow(() -> new CoreException(ErrorType.BAD_REQUEST, "지원하지 않는 결제 방식입니다."));
 
