@@ -33,10 +33,14 @@ public class Payment extends BaseEntity {
   private String transactionId;//멱등키
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "card_type", nullable = false)
+  @Column(name = "payment_type", nullable = false)
+  private PaymentType paymentType;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "card_type", nullable = true)
   private CardType cardType;
 
-  @Column(name = "card_no", nullable = false)
+  @Column(name = "card_no", nullable = true)
   private String cardNo;
 
   @Embedded
@@ -50,12 +54,13 @@ public class Payment extends BaseEntity {
   @Column(name = "pg_txn_id")
   private String pgTxnId;
 
-  public Payment(Long orderId, Long userId, Money amount, CardType cardType, String cardNo) {
-    validateConstructor(orderId, userId, amount, cardNo);
+  public Payment(Long orderId, Long userId, Money amount, PaymentType paymentType, CardType cardType, String cardNo) {
+    validateConstructor(orderId, userId, amount, paymentType);
 
     this.orderId = orderId;
     this.userId = userId;
     this.amount = amount;
+    this.paymentType = paymentType;
     this.cardType = cardType;
     this.cardNo = cardNo;
     this.status = PaymentStatus.READY;
@@ -63,18 +68,18 @@ public class Payment extends BaseEntity {
     this.transactionId = UUID.randomUUID().toString();
   }
 
-  private void validateConstructor(Long orderId, Long userId, Money amount, String cardNo) {
+  private void validateConstructor(Long orderId, Long userId, Money amount, PaymentType paymentType) {
     if (orderId == null) {
       throw new CoreException(ErrorType.BAD_REQUEST, "주문 정보는 필수입니다.");
     }
     if (userId == null) {
       throw new CoreException(ErrorType.BAD_REQUEST, "사용자 정보는 필수입니다.");
     }
-    if (amount == null) {
+    if (amount == null || amount.getValue() <= 0) {
       throw new CoreException(ErrorType.BAD_REQUEST, "결제 금액은 필수입니다.");
     }
-    if (!StringUtils.hasText(cardNo)) {
-      throw new CoreException(ErrorType.BAD_REQUEST, "카드 번호는 필수입니다.");
+    if (paymentType == null) {
+      throw new CoreException(ErrorType.BAD_REQUEST, "결제 방식은 필수입니다.");
     }
   }
 

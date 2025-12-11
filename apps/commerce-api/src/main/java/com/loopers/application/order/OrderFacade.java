@@ -1,10 +1,14 @@
 package com.loopers.application.order;
 
+import com.loopers.domain.coupon.CouponDiscountResult;
+import com.loopers.domain.coupon.CouponService;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderCommand.Item;
 import com.loopers.domain.order.OrderCommand.PlaceOrder;
 import com.loopers.domain.order.OrderItem;
 import com.loopers.domain.order.OrderService;
+import com.loopers.domain.payment.Payment;
+import com.loopers.domain.payment.PaymentProcessor;
 import com.loopers.domain.point.PointService;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductService;
@@ -28,6 +32,8 @@ public class OrderFacade {
   private final UserService userService;
   private final OrderService orderService;
   private final PointService pointService;
+  private final CouponService couponService;
+  private final List<PaymentProcessor> paymentProcessors;
 
   @Transactional
   public OrderInfo placeOrder(PlaceOrder command) {
@@ -45,8 +51,32 @@ public class OrderFacade {
     Order order = orderService.createOrder(user.getId(), orderItems);
     long totalAmount = order.getTotalAmount().getValue();
 
+    long finalPaymentAmount = totalAmount;
+
+    if (command.couponId() != null) {
+      CouponDiscountResult discountResult = couponService.useCouponAndCalculateDiscount(
+          command.couponId(),
+          totalAmount
+      );
+
+      finalPaymentAmount -= discountResult.discountAmount();
+    }
+
     productService.deductStock(products, orderItems);
-    pointService.deductPoint(user, totalAmount);
+
+    PaymentProcessor processor = paymentProcessors.stream()
+        .filter(p -> p.supports(command.paymentType())) // command에 paymentType 필드 추가 필요
+        .findFirst()
+        .orElseThrow(() -> new CoreException(ErrorType.BAD_REQUEST, "지원하지 않는 결제 방식입니다."));
+
+    Map<String, Object> paymentDetails = command.getPaymentDetails();
+
+    Payment paymentResult = processor.process(
+        order.getId(),
+        user,
+        finalPaymentAmount,
+        paymentDetails
+    );
 
     return OrderInfo.from(order);
   }

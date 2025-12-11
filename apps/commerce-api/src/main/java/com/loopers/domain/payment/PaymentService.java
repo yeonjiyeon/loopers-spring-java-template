@@ -26,10 +26,29 @@ public class PaymentService {
         orderId,
         userId,
         amount,
+        PaymentType.PG,
         cardType,
         cardNo
     );
     return paymentRepository.save(payment);
+  }
+
+  @Transactional
+  public Payment createPointPaymentAndComplete(Long userId, Long orderId, Money amount) {
+
+    Payment payment = new Payment(
+        orderId,
+        userId,
+        amount,
+        PaymentType.POINT,
+        null,
+        null
+    );
+    paymentRepository.save(payment);
+
+    completePayment(payment);
+
+    return payment;
   }
 
   @Transactional

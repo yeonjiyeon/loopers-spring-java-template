@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.loopers.domain.money.Money;
 import com.loopers.domain.order.OrderCommand;
 import com.loopers.domain.order.OrderCommand.Item;
+import com.loopers.domain.payment.PaymentType;
 import com.loopers.domain.point.Point;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductRepository;
@@ -44,6 +45,28 @@ class OrderFacadeIntegrationTest {
     databaseCleanUp.truncateAllTables();
   }
 
+  private OrderCommand.PlaceOrder createPlaceOrderCommand(Long userId, List<Item> items) {
+    return new OrderCommand.PlaceOrder(
+        userId,
+        null,
+        items,
+        PaymentType.PG,
+        "KB",
+        "1234-5678-9012-3456"
+    );
+  }
+
+  private OrderCommand.PlaceOrder createPlaceOrderCommandWithCoupon(Long userId, Long couponId, List<Item> items) {
+    return new OrderCommand.PlaceOrder(
+        userId,
+        couponId,
+        items,
+        PaymentType.PG,
+        "KB",
+        "1234-5678-9012-3456"
+    );
+  }
+
   @DisplayName("상품 주문시")
   @Nested
   class PlaceOrder {
@@ -59,7 +82,7 @@ class OrderFacadeIntegrationTest {
       Product saveProduct = productRepository.save(product);
 
       Item itemCommand = new Item(saveProduct.getId(), 3);
-      OrderCommand.PlaceOrder command = new OrderCommand.PlaceOrder(savedUser.getId(), List.of(itemCommand));
+      OrderCommand.PlaceOrder command = createPlaceOrderCommand(savedUser.getId(), List.of(itemCommand));
 
       // act
       OrderInfo result = orderFacade.placeOrder(command);
@@ -75,6 +98,7 @@ class OrderFacadeIntegrationTest {
       Product updatedProduct = productRepository.findById(saveProduct.getId()).orElseThrow();
       assertThat(updatedProduct.getStock()).isEqualTo(7);
 
+      //pg결제시는 포인트 차감x -> 추후 수정 예정
       User updatedUser = userRepository.findByUserId("userA").orElseThrow();
       assertThat(updatedUser.getPoint().getAmount()).isEqualTo(40000L);
     }
@@ -90,7 +114,7 @@ class OrderFacadeIntegrationTest {
       );
 
       Item itemCommand = new Item(product.getId(), 3);
-      OrderCommand.PlaceOrder command = new OrderCommand.PlaceOrder(user.getId(), List.of(itemCommand));
+      OrderCommand.PlaceOrder command = createPlaceOrderCommand(user.getId(), List.of(itemCommand));
 
       // act & assert
       CoreException exception = assertThrows(CoreException.class, () -> {
@@ -111,7 +135,7 @@ class OrderFacadeIntegrationTest {
       );
 
       Item itemCommand = new Item(product.getId(), 1);
-      OrderCommand.PlaceOrder command = new OrderCommand.PlaceOrder(user.getId(), List.of(itemCommand));
+      OrderCommand.PlaceOrder command = createPlaceOrderCommand(user.getId(), List.of(itemCommand));
 
       // act & assert
       CoreException exception = assertThrows(CoreException.class, () -> {
@@ -134,7 +158,7 @@ class OrderFacadeIntegrationTest {
       );
 
       Item itemCommand = new Item(product.getId(), 1); // 1개 주문 시도
-      OrderCommand.PlaceOrder command = new OrderCommand.PlaceOrder(user.getId(), List.of(itemCommand));
+      OrderCommand.PlaceOrder command = createPlaceOrderCommand(user.getId(), List.of(itemCommand));
 
       // act
       assertThrows(CoreException.class, () -> {

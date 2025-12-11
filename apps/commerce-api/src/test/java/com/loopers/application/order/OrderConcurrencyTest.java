@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.loopers.domain.money.Money;
 import com.loopers.domain.order.OrderCommand.Item;
 import com.loopers.domain.order.OrderCommand.PlaceOrder;
+import com.loopers.domain.payment.PaymentType;
 import com.loopers.domain.point.Point;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.user.User;
@@ -46,6 +47,17 @@ class OrderConcurrencyTest {
     productJpaRepository.deleteAll();
   }
 
+  private PlaceOrder createPlaceOrderCommand(Long userId, List<Item> items) {
+    return new PlaceOrder(
+        userId,
+        null,
+        items,
+        PaymentType.PG,
+        "KB",
+        "1234-5678-9012-3456"
+    );
+  }
+
   @Nested
   @DisplayName("포인트 동시성 (비관적 락)")
   class PointConcurrency {
@@ -82,8 +94,10 @@ class OrderConcurrencyTest {
           .mapToObj(i -> CompletableFuture.runAsync(() -> {
             try {
               Product targetProduct = distinctProducts.get(i);
-              PlaceOrder command = new PlaceOrder(savedUser.getId(),
-                  List.of(new Item(targetProduct.getId(), 1)));
+              PlaceOrder command = createPlaceOrderCommand(
+                  savedUser.getId(),
+                  List.of(new Item(targetProduct.getId(), 1))
+              );
 
               orderFacade.placeOrder(command);
 
@@ -141,8 +155,10 @@ class OrderConcurrencyTest {
       List<CompletableFuture<Void>> futures = IntStream.range(0, threadCount)
           .mapToObj(i -> CompletableFuture.runAsync(() -> {
             try {
-              PlaceOrder command = new PlaceOrder(multiUsers.get(i).getId(),
-                  List.of(new Item(savedProduct.getId(), 1)));
+              PlaceOrder command = createPlaceOrderCommand(
+                  multiUsers.get(i).getId(),
+                  List.of(new Item(savedProduct.getId(), 1))
+              );
 
               orderFacade.placeOrder(command);
 
