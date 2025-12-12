@@ -33,7 +33,8 @@ public class RedisConfig {
 
     objectMapper.activateDefaultTyping(
         BasicPolymorphicTypeValidator.builder()
-            .allowIfBaseType(Object.class)
+            .allowIfBaseType("com.loopers")
+            .allowIfBaseType("java.util")
             .build(),
         ObjectMapper.DefaultTyping.EVERYTHING
     );

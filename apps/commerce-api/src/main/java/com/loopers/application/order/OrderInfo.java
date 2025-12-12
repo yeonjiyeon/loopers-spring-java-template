@@ -3,6 +3,7 @@ package com.loopers.application.order;
 import com.loopers.domain.money.Money;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderItem;
+import com.loopers.domain.payment.Payment;
 import java.util.List;
 
 public record OrderInfo(
