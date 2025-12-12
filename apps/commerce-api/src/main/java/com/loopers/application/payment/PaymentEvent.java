@@ -1,5 +1,7 @@
 package com.loopers.application.payment;
 
+import com.loopers.domain.event.DomainEvent;
+
 public class PaymentEvent {
   public record PaymentRequestedEvent(
       Long orderId,
@@ -12,7 +14,7 @@ public class PaymentEvent {
       Long paymentId,
       boolean isSuccess,
       Long couponId
-  ) {}
+  ) implements DomainEvent {}
 
   public record PaymentRequestFailedEvent(
       Long orderId,
