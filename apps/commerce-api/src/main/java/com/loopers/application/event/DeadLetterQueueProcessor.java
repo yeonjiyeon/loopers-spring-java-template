@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loopers.domain.event.DomainEvent;
 import com.loopers.domain.event.FailedEvent;
 import com.loopers.infrastructure.event.FailedEventRepository;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -22,7 +24,7 @@ public class DeadLetterQueueProcessor {
   private static final int MAX_RETRY_COUNT = 5;
 
   @Scheduled(fixedRate = 300000)
-  @Transactional
+  @Transactional 
   public void retryFailedEvents() {
 
     List<FailedEvent> eventsToRetry = failedEventRepository.findByRetryCountLessThan(MAX_RETRY_COUNT);
@@ -39,7 +41,7 @@ public class DeadLetterQueueProcessor {
         failedEventRepository.delete(failedEvent);
 
       } catch (Exception e) {
-        failedEvent.incrementRetryCount();
+        failedEvent.incrementRetryCount(); 
         failedEventRepository.save(failedEvent);
       }
     }

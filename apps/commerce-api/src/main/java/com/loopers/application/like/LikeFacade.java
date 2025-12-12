@@ -31,6 +31,12 @@ public class LikeFacade {
 
     eventPublisher.publishEvent(new LikeCreatedEvent(productId, 1));
 
+    eventPublisher.publishEvent(new LikeActionTrackEvent(
+        userId,
+        productId,
+        "LIKE"
+    ));
+
     return LikeInfo.from(newLike, product.getLikeCount());
   }
 
@@ -40,6 +46,12 @@ public class LikeFacade {
     likeService.unLike(userId, productId);
 
     eventPublisher.publishEvent(new LikeCreatedEvent(productId, -1));
+
+    eventPublisher.publishEvent(new LikeActionTrackEvent(
+        userId,
+        productId,
+        "UNLIKE"
+    ));
 
     return productService.getProduct(productId).getLikeCount();
 
