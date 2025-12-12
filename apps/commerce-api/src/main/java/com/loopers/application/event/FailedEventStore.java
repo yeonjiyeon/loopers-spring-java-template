@@ -2,6 +2,7 @@ package com.loopers.application.event;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.loopers.application.monitoring.port.MonitoringService;
 import com.loopers.domain.event.DomainEvent;
 import com.loopers.domain.event.FailedEvent;
 import com.loopers.infrastructure.event.FailedEventRepository;
@@ -16,6 +17,7 @@ public class FailedEventStore implements FailedEventScheduler {
 
   private final FailedEventRepository failedEventRepository;
   private final ObjectMapper objectMapper;
+  private final MonitoringService monitoringService;
 
   @Transactional
   @Override
@@ -38,7 +40,11 @@ public class FailedEventStore implements FailedEventScheduler {
 
     try {
       failedEventRepository.save(failedEvent);
+      monitoringService.incrementMetric("dlq.event_saved_total", "type:" + failedEvent.getEventType());
+
     } catch (Exception e) {
+      monitoringService.sendCriticalAlert(
+          "CRITICAL: DLQ 저장소 장애. 이벤트 유실 위험 발생! 사유: " + e.getMessage(), e);
     }
   }
 }
