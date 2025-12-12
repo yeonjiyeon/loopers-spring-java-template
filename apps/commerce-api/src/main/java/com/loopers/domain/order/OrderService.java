@@ -5,9 +5,11 @@ import com.loopers.support.error.ErrorType;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Component
+@Transactional
 public class OrderService {
 
   private final OrderRepository orderRepository;
@@ -25,4 +27,17 @@ public class OrderService {
   public Order getOrder(Long id) {
     return orderRepository.findById(id).orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "주문을 찾을 수 없습니다."));
   }
+
+  public void updateOrderStatus(Long orderId, OrderStatus newStatus) {
+    Order order = getOrder(orderId);
+    order.updateStatus(newStatus);
+  }
+  public void failPayment(Long orderId) {
+    Order order = getOrder(orderId);
+
+    if (order.getStatus() != OrderStatus.PAYMENT_COMPLETED) {
+      order.updateStatus(OrderStatus.PAYMENT_FAILED);
+    }
+  }
+
 }

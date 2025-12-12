@@ -6,8 +6,6 @@ import com.loopers.domain.order.OrderCommand.Item;
 import com.loopers.domain.order.OrderCommand.PlaceOrder;
 import com.loopers.domain.order.OrderItem;
 import com.loopers.domain.order.OrderService;
-import com.loopers.domain.payment.Payment;
-import com.loopers.domain.payment.PaymentProcessor;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductService;
 import com.loopers.domain.user.User;
@@ -18,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +29,7 @@ public class OrderFacade {
   private final UserService userService;
   private final OrderService orderService;
   private final CouponService couponService;
-  private final List<PaymentProcessor> paymentProcessors;
+  private final ApplicationEventPublisher eventPublisher;
 
   @Transactional
   public OrderInfo placeOrder(PlaceOrder command) {
@@ -59,21 +58,21 @@ public class OrderFacade {
       finalPaymentAmount -= disCountAmount;
     }
 
+    couponService.reserveCoupon(command.couponId());
+
     productService.deductStock(products, orderItems);
 
-    PaymentProcessor processor = paymentProcessors.stream()
-        .filter(p -> p.supports(command.paymentType()))
-        .findFirst()
-        .orElseThrow(() -> new CoreException(ErrorType.BAD_REQUEST, "지원하지 않는 결제 방식입니다."));
-
-    Map<String, Object> paymentDetails = command.getPaymentDetails();
-
-    Payment paymentResult = processor.process(
+    OrderCreatedEvent orderEvent = new OrderCreatedEvent(
         order.getId(),
         user,
         finalPaymentAmount,
-        paymentDetails
+        command.paymentType(),
+        command.cardType(),
+        command.cardNo(),
+        command.couponId()
     );
+
+    eventPublisher.publishEvent(orderEvent);
 
     return OrderInfo.from(order);
   }

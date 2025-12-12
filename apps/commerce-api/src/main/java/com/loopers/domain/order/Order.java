@@ -10,6 +10,8 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -24,6 +26,10 @@ public class Order extends BaseEntity {
 
   @Column(name = "ref_user_id", nullable = false)
   private Long userId;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status", nullable = false)
+  private OrderStatus status;
 
   @Embedded
   @AttributeOverride(name = "value", column = @Column(name = "total_amount"))
@@ -48,6 +54,14 @@ public class Order extends BaseEntity {
 
   public Long getUserId() {
     return userId;
+  }
+
+  public OrderStatus getStatus() {
+    return status;
+  }
+
+  public void updateStatus(OrderStatus newStatus) {
+    this.status = newStatus;
   }
 
   public void addOrderItem(Product product, int quantity) {
