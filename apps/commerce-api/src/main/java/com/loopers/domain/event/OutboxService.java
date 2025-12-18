@@ -18,16 +18,26 @@ public class OutboxService {
   @Transactional(propagation = Propagation.MANDATORY)
   public void saveEvent(String aggregateType, String aggregateId, Object event) {
     try {
+      String eventId = (String) event.getClass().getMethod("eventId").invoke(event);
       String payload = objectMapper.writeValueAsString(event);
       OutboxEvent outboxEvent = new OutboxEvent(
+          eventId,
           aggregateType,
           aggregateId,
           event.getClass().getSimpleName(),
           payload
       );
       outboxRepository.save(outboxEvent);
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException("이벤트 직렬화 실패", e);
+    } catch (Exception e) {
+      throw new RuntimeException("Outbox 저장 실패", e);
     }
+  }
+
+  @Transactional
+  public void markPublished(String eventId) {
+    outboxRepository.findByEventId(eventId).ifPresent(event -> {
+      event.markPublished();
+      outboxRepository.save(event);
+    });
   }
 }
