@@ -23,29 +23,44 @@ spring:
       - redis.yml
       - logging.yml
       - monitoring.yml
+      - kafka.yml
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connectTimeout: 1000
+            readTimeout: 1000
 
 resilience4j:
-  # Retry
   retry:
     instances:
-      pgRetry:
-        max-attempts: 3
-        wait-duration: 1000ms
+      pg-client:
+        max-attempts: 2 # 1번만 재시도 (총 2회)
+        wait-duration: 500ms
         retry-exceptions:
           - java.io.IOException
-          - java.util.concurrent.TimeoutException
-          - java.net.ConnectException
+          - java.net.SocketTimeoutException
+          - feign.RetryableException
+        # 비즈니스 로직 에러(400 등)는 재시도 하지 않음
+        ignore-exceptions:
+          - com.loopers.support.error.CoreException
+          - feign.FeignException.BadRequest
 
-  # CircuitBreaker
   circuitbreaker:
     configs:
       default:
         register-health-indicator: true
     instances:
-      simpleCircuitBreakerConfig:
+      pg-client:
         sliding-window-type: COUNT_BASED
         sliding-window-size: 10
-        failure-rate-threshold: 50
+        minimum-number-of-calls: 5
+        # 500ms 이상 걸리면 '슬로우 콜'로 간주 (빠른 차단)
+        slow-call-duration-threshold: 500ms
+        slow-call-rate-threshold: 50
+
+        failure-rate-threshold: 40
         wait-duration-in-open-state: 10s
         permitted-number-of-calls-in-half-open-state: 3
 
