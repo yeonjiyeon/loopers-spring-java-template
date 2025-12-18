@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,9 @@ import lombok.NoArgsConstructor;
 @Table(name = "coupon")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Coupon extends BaseEntity {
+
+  @Version
+  private long version;
 
   @Column(name = "ref_user_id", nullable = false)
   private long userId;
@@ -26,6 +30,10 @@ public class Coupon extends BaseEntity {
   private long discountValue;
 
   private boolean used;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status", nullable = false)
+  private CouponStatus status;
 
   public Coupon(long userId, CouponType type, long discountValue) {
     if (type == CouponType.PERCENTAGE && (discountValue < 0 || discountValue > 100)) {
@@ -52,4 +60,24 @@ public class Coupon extends BaseEntity {
     this.used = true;
   }
 
+  public void reserve() {
+    if (this.status != CouponStatus.ISSUED) {
+      throw new CoreException(ErrorType.BAD_REQUEST,
+          "현재 상태(" + this.status + ")에서는 쿠폰을 예약할 수 없습니다.");
+    }
+
+    this.status = CouponStatus.RESERVED;
+  }
+
+  public void confirmUse() {
+    if (this.status != CouponStatus.RESERVED) {
+      throw new CoreException(ErrorType.BAD_REQUEST,
+          "예약 상태가 아니므로 사용을 확정할 수 없습니다: " + this.status);
+    }
+    this.status = CouponStatus.USED;
+  }
+
+  public boolean canUse() {
+    return  this.status == CouponStatus.ISSUED;
+  }
 }

@@ -1,11 +1,11 @@
 package com.loopers.application.order;
 
+import com.loopers.domain.coupon.CouponService;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderCommand.Item;
 import com.loopers.domain.order.OrderCommand.PlaceOrder;
 import com.loopers.domain.order.OrderItem;
 import com.loopers.domain.order.OrderService;
-import com.loopers.domain.point.PointService;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductService;
 import com.loopers.domain.user.User;
@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +28,8 @@ public class OrderFacade {
   private final ProductService productService;
   private final UserService userService;
   private final OrderService orderService;
-  private final PointService pointService;
+  private final CouponService couponService;
+  private final ApplicationEventPublisher eventPublisher;
 
   @Transactional
   public OrderInfo placeOrder(PlaceOrder command) {
@@ -45,8 +47,32 @@ public class OrderFacade {
     Order order = orderService.createOrder(user.getId(), orderItems);
     long totalAmount = order.getTotalAmount().getValue();
 
+    long finalPaymentAmount = totalAmount;
+
+    if (command.couponId() != null) {
+      long disCountAmount = couponService.calculateDiscountAmount(
+          command.couponId(),
+          totalAmount
+      );
+
+      finalPaymentAmount -= disCountAmount;
+    }
+
+    couponService.reserveCoupon(command.couponId());
+
     productService.deductStock(products, orderItems);
-    pointService.deductPoint(user, totalAmount);
+
+    OrderCreatedEvent orderEvent = new OrderCreatedEvent(
+        order.getId(),
+        user,
+        finalPaymentAmount,
+        command.paymentType(),
+        command.cardType(),
+        command.cardNo(),
+        command.couponId()
+    );
+
+    eventPublisher.publishEvent(orderEvent);
 
     return OrderInfo.from(order);
   }
