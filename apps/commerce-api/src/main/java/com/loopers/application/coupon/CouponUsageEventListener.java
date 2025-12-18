@@ -6,6 +6,7 @@ import com.loopers.domain.coupon.CouponService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -17,7 +18,7 @@ public class CouponUsageEventListener {
   private final FailedEventStore failedEventStore;
 
   @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-  @Transactional
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void handlePaymentCompletedEvent(PaymentCompletedEvent event) {
 
     if (event.couponId() == null) return;

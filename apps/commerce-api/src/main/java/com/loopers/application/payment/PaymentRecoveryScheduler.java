@@ -7,7 +7,7 @@ import com.loopers.infrastructure.pg.PgClient;
 import com.loopers.infrastructure.pg.PgV1Dto.PgDetail;
 import com.loopers.infrastructure.pg.PgV1Dto.PgOrderResponse;
 import jakarta.transaction.Transactional;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -23,7 +23,7 @@ public class PaymentRecoveryScheduler {
   @Scheduled(fixedDelay = 60000)
   @Transactional
   public void recover() {
-    LocalDateTime timeLimit = LocalDateTime.now().minusMinutes(5);
+    ZonedDateTime timeLimit = ZonedDateTime.now().minusMinutes(5);
     List<Payment> stuckPayments = paymentRepository.findAllByStatusAndCreatedAtBefore(
         PaymentStatus.READY, timeLimit
     );
