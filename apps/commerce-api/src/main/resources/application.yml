@@ -23,6 +23,7 @@ spring:
       - redis.yml
       - logging.yml
       - monitoring.yml
+      - kafka.yml
   cloud:
     openfeign:
       client:
@@ -30,6 +31,7 @@ spring:
           default:
             connectTimeout: 1000
             readTimeout: 1000
+
 
 resilience4j:
   retry:
@@ -45,7 +47,6 @@ resilience4j:
         ignore-exceptions:
           - com.loopers.support.error.CoreException
           - feign.FeignException.BadRequest
-          - feign.FeignException.NotFound
 
   circuitbreaker:
     configs:
