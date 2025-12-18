@@ -1,4 +1,4 @@
-package com.loopers.application.order;
+package com.loopers.application.order.event;
 
 import com.loopers.domain.payment.PaymentType;
 import com.loopers.domain.user.User;

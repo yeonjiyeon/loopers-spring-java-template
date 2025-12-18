@@ -1,8 +1,8 @@
-package com.loopers.application.product;
+package com.loopers.application.product.event;
 
 import com.loopers.application.event.FailedEventStore;
 import com.loopers.application.like.event.LikeCreatedEvent;
-import com.loopers.event.LikeKafkaEvent;
+import com.loopers.event.LikeCountEvent;
 import com.loopers.domain.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -30,7 +30,7 @@ public class LikeCountAggregateListener {
     try {
       int updatedLikeCount = performAggregation(event);
 
-      eventPublisher.publishEvent(new LikeKafkaEvent(
+      eventPublisher.publishEvent(new LikeCountEvent(
           event.eventId(),
           event.productId(),
           updatedLikeCount

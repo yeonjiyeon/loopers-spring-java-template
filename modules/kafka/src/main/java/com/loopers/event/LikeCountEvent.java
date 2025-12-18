@@ -1,6 +1,6 @@
 package com.loopers.event;
 
-public record LikeKafkaEvent(
+public record LikeCountEvent(
    String eventId,
     Long productId,
     int currentLikeCount

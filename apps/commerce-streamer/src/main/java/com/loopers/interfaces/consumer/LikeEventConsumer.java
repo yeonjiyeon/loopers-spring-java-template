@@ -1,7 +1,7 @@
 package com.loopers.interfaces.consumer;
 
 import com.loopers.domain.metrics.ProductMetricsService;
-import com.loopers.event.LikeKafkaEvent;
+import com.loopers.event.LikeCountEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -20,7 +20,7 @@ public class LikeEventConsumer {
       topics = "catalog-events",
       groupId = "metrics-group"
   )
-  public void onMessage(ConsumerRecord<String, LikeKafkaEvent> record, Acknowledgment ack) {
+  public void onMessage(ConsumerRecord<String, LikeCountEvent> record, Acknowledgment ack) {
     try {
       log.info("이벤트 수신: {}", record.value().eventId());
 

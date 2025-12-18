@@ -1,6 +1,5 @@
-package com.loopers.application.like;
+package com.loopers.application.like.event;
 
-import com.loopers.application.like.event.LikeCreatedEvent;
 import com.loopers.domain.event.OutboxService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
