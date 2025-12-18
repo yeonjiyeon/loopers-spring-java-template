@@ -1,5 +1,7 @@
 package com.loopers.application.like;
 
+import com.loopers.application.like.event.LikeActionTrackEvent;
+import com.loopers.application.like.event.LikeCreatedEvent;
 import com.loopers.domain.like.Like;
 import com.loopers.domain.like.LikeService;
 import com.loopers.domain.product.Product;
@@ -29,7 +31,7 @@ public class LikeFacade {
 
     Like newLike = likeService.save(userId, productId);
 
-    eventPublisher.publishEvent(new LikeCreatedEvent(productId, 1));
+    eventPublisher.publishEvent(LikeCreatedEvent.of(productId, 1));
 
     eventPublisher.publishEvent(new LikeActionTrackEvent(
         userId,
@@ -45,7 +47,7 @@ public class LikeFacade {
 
     likeService.unLike(userId, productId);
 
-    eventPublisher.publishEvent(new LikeCreatedEvent(productId, -1));
+    eventPublisher.publishEvent(LikeCreatedEvent.of(productId, -1));
 
     eventPublisher.publishEvent(new LikeActionTrackEvent(
         userId,

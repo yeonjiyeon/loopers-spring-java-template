@@ -17,7 +17,7 @@ public class OutboxEvent {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-
+  private String eventId;
   private String aggregateType;
   private String aggregateId;
   private String eventType;      // 예: LikeCreatedEvent
@@ -28,7 +28,8 @@ public class OutboxEvent {
   private boolean published = false;
   private LocalDateTime createdAt = LocalDateTime.now();
 
-  public OutboxEvent(String aggregateType, String aggregateId, String eventType, String payload) {
+  public OutboxEvent(String eventId, String aggregateType, String aggregateId, String eventType, String payload) {
+    this.eventId = eventId;
     this.aggregateType = aggregateType;
     this.aggregateId = aggregateId;
     this.eventType = eventType;

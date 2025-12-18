@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OutboxRepository extends JpaRepository<OutboxEvent, Long> {
 
-  List<OutboxEvent> findAllByPublishedFalse();
+  Optional<OutboxEvent> findByEventId(String eventId);
 
-  Optional<OutboxEvent> findFirstByAggregateIdAndEventTypeAndPublishedFalseOrderByCreatedAtDesc(String aggregateId, String eventType);
 }
