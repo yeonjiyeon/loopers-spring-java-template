@@ -1,6 +1,6 @@
 package com.loopers.application.payment;
 
-import com.loopers.application.order.OrderCreatedEvent;
+import com.loopers.application.order.event.OrderCreatedEvent;
 import com.loopers.application.payment.PaymentEvent.PaymentRequestFailedEvent;
 import com.loopers.application.payment.PaymentEvent.PaymentRequestedEvent;
 import com.loopers.domain.payment.Payment;
@@ -36,7 +36,7 @@ public class PgPaymentEventListener {
       return;
     }
 
-    User user = userService.findById(event.user().getId())
+    User user = userService.findById(event.userId())
         .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "유저 정보를 찾을 수 없습니다."));
 
     PaymentProcessor processor = paymentProcessors.stream()
