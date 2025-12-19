@@ -2,7 +2,6 @@ package com.loopers.application.like.event;
 
 import com.loopers.domain.event.OutboxService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
@@ -10,8 +9,8 @@ import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class LikeEventOutboxHandler {
+
   private final KafkaTemplate<Object, Object> kafkaTemplate;
   private final OutboxService outboxService;
 
@@ -24,7 +23,7 @@ public class LikeEventOutboxHandler {
           if (ex == null) {
             outboxService.markPublished(event.eventId());
           } else {
-            log.error("카프카 전송 실패: {}", ex.getMessage());
+            outboxService.markFailed(event.eventId());
           }
         });
   }

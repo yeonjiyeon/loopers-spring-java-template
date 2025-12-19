@@ -2,6 +2,8 @@ package com.loopers.domain.event;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,7 +29,10 @@ public class OutboxEvent {
   @Column(columnDefinition = "TEXT")
   private String payload;
 
-  private boolean published = false;
+  @Enumerated(EnumType.STRING)
+  private OutboxStatus status = OutboxStatus.INIT;
+
+  private int retryCount = 0;
   private LocalDateTime createdAt = LocalDateTime.now();
 
   public OutboxEvent(String eventId, String aggregateType, String aggregateId, String eventType, String payload) {
@@ -39,6 +44,11 @@ public class OutboxEvent {
   }
 
   public void markPublished() {
-    this.published = true;
+    this.status = OutboxStatus.PUBLISHED;
+  }
+
+  public void markFailed() {
+    this.status = OutboxStatus.FAILED;
+    this.retryCount++;
   }
 }
