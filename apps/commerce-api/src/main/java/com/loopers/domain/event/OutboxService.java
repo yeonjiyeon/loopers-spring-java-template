@@ -1,6 +1,5 @@
 package com.loopers.domain.event;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loopers.infrastructure.event.OutboxRepository;
 import lombok.RequiredArgsConstructor;
