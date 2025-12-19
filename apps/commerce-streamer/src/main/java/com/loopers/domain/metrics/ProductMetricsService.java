@@ -1,9 +1,10 @@
 package com.loopers.domain.metrics;
 
+import com.loopers.core.cache.RedisCacheHandler;
 import com.loopers.domain.event.EventHandled;
 import com.loopers.event.LikeCountEvent;
+import com.loopers.event.ProductStockEvent;
 import com.loopers.event.ProductViewEvent;
-import com.loopers.event.SalesCountEvent;
 import com.loopers.infrastructure.EventHandledRepository;
 import com.loopers.infrastructure.ProductMetricsRepository;
 import java.time.LocalDateTime;
@@ -17,6 +18,7 @@ public class ProductMetricsService {
 
   private final ProductMetricsRepository metricsRepository;
   private final EventHandledRepository eventHandledRepository;
+  private final RedisCacheHandler redisCacheHandler;
 
   @Transactional
   public void processLikeCountEvent(LikeCountEvent event) {
@@ -41,12 +43,18 @@ public class ProductMetricsService {
   }
 
   @Transactional
-  public void processSalesCountEvent(SalesCountEvent event) {
+  public void processSalesCountEvent(ProductStockEvent event) {
     if (isAlreadyHandled(event.eventId())) return;
 
     ProductMetrics metrics = getOrCreateMetrics(event.productId());
 
-    metrics.addSalesCount(event.quantity());
+    metrics.addSalesCount(event.sellQuantity());
+
+    if (event.currentStock() <= 0) {
+      redisCacheHandler.delete("product:detail:" + event.productId());
+      redisCacheHandler.deleteByPattern("product:list");
+
+    }
 
     completeProcess(event.eventId(), metrics);
   }
