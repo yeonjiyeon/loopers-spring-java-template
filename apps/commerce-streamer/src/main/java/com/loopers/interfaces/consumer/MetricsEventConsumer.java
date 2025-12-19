@@ -2,8 +2,8 @@ package com.loopers.interfaces.consumer;
 
 import com.loopers.domain.metrics.ProductMetricsService;
 import com.loopers.event.LikeCountEvent;
+import com.loopers.event.ProductStockEvent;
 import com.loopers.event.ProductViewEvent;
-import com.loopers.event.SalesCountEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -48,7 +48,7 @@ public class MetricsEventConsumer {
       topics = "catalog-events",
       groupId = "metrics-group"
   )
-  public void consumeSalesCount(SalesCountEvent event, Acknowledgment ack) {
+  public void consumeSalesCount(ProductStockEvent event, Acknowledgment ack) {
     try {
       metricsService.processSalesCountEvent(event);
       ack.acknowledge();

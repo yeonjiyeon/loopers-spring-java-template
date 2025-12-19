@@ -1,7 +1,7 @@
 package com.loopers.domain.product;
 
 import com.loopers.domain.order.OrderItem;
-import com.loopers.support.cache.RedisCacheHandler;
+import com.loopers.core.cache.RedisCacheHandler;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import java.time.Duration;
@@ -103,5 +103,9 @@ public class ProductService {
       );
     }
     return sb.toString();
+  }
+
+  public int getStock(Long id) {
+    return productRepository.findStockById(id);
   }
 }

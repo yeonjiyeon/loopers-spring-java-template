@@ -1,7 +1,8 @@
-package com.loopers.support.cache;
+package com.loopers.core.cache;
 
-import com.loopers.support.page.PageWrapper;
+import com.loopers.core.cache.page.PageWrapper;
 import java.time.Duration;
+import java.util.Set;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -48,5 +49,16 @@ public class RedisCacheHandler {
     }
 
     return result;
+  }
+
+  public void delete(String key) {
+    redisTemplate.delete(key);
+  }
+
+  public void deleteByPattern(String pattern) {
+    Set<String> keys = redisTemplate.keys(pattern + "*");
+    if (keys != null && !keys.isEmpty()) {
+      redisTemplate.delete(keys);
+    }
   }
 }
