@@ -25,6 +25,8 @@ public class ProductEventOutboxHandler {
         .whenComplete((result, ex) -> {
           if (ex == null) {
             outboxService.markPublished(event.eventId());
+          } else {
+            outboxService.markFailed(event.eventId());
           }
         });
   }

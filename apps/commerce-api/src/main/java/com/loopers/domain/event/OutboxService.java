@@ -40,4 +40,11 @@ public class OutboxService {
       outboxRepository.save(event);
     });
   }
+
+  public void markFailed(String eventId) {
+    outboxRepository.findByEventId(eventId).ifPresent(event -> {
+      event.markFailed();
+      outboxRepository.save(event);
+    });
+  }
 }
