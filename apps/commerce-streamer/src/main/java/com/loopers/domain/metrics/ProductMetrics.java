@@ -15,7 +15,9 @@ public class ProductMetrics {
   @Id
   private Long productId;
 
-  private int likeCount;
+  private int likeCount = 0;
+  private int viewCount = 0;
+  private int salesCount = 0;
 
   private LocalDateTime updatedAt;
 
@@ -29,5 +31,15 @@ public class ProductMetrics {
     }
     this.likeCount = newCount;
     this.updatedAt = eventTime;
+  }
+
+  public void incrementViewCount() {
+    this.viewCount += 1;
+    this.updatedAt = LocalDateTime.now();
+  }
+
+  public void addSalesCount(int quantity) {
+    this.salesCount += quantity;
+    this.updatedAt = LocalDateTime.now();
   }
 }
