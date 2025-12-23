@@ -14,7 +14,6 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 public class OrderSalesAggregateListener {
 
-  private final ProductService productService;
   private final OutboxService outboxService;
   private final ApplicationEventPublisher eventPublisher;
 
@@ -24,11 +23,10 @@ public class OrderSalesAggregateListener {
 
     event.items().forEach(item -> {
 
-      int currentStock = productService.getStock(item.productId());
       ProductStockEvent kafkaEvent = ProductStockEvent.of(
           item.productId(),
           item.quantity(),
-          currentStock
+          item.remainStock()
       );
 
       outboxService.saveEvent("STOCKS_METRICS", String.valueOf(item.productId()), kafkaEvent);

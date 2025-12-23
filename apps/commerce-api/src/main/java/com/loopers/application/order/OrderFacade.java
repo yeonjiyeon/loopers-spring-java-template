@@ -67,6 +67,7 @@ public class OrderFacade {
         order.getId(),
         user,
         orderItems,
+        products,
         finalPaymentAmount,
         command.paymentType(),
         command.cardType(),
