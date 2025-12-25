@@ -1,6 +1,7 @@
 package com.loopers.interfaces.consumer;
 
 import com.loopers.domain.metrics.ProductMetricsService;
+import com.loopers.domain.rank.RankingService;
 import com.loopers.event.LikeCountEvent;
 import com.loopers.event.ProductStockEvent;
 import com.loopers.event.ProductViewEvent;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 public class MetricsEventConsumer {
 
   private final ProductMetricsService metricsService;
+  private final RankingService rankingService;
 
   @KafkaListener(
       topics = "catalog-events",

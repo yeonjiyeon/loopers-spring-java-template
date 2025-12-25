@@ -1,7 +1,6 @@
 package com.loopers.application.order.event;
 
 import com.loopers.domain.event.OutboxService;
-import com.loopers.domain.product.ProductService;
 import com.loopers.event.ProductStockEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -26,7 +25,8 @@ public class OrderSalesAggregateListener {
       ProductStockEvent kafkaEvent = ProductStockEvent.of(
           item.productId(),
           item.quantity(),
-          item.remainStock()
+          item.remainStock(),
+          item.price()
       );
 
       outboxService.saveEvent("STOCKS_METRICS", String.valueOf(item.productId()), kafkaEvent);
