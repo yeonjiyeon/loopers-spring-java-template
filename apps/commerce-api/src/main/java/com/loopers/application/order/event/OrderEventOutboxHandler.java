@@ -1,6 +1,7 @@
 package com.loopers.application.order.event;
 
 import com.loopers.domain.event.OutboxService;
+import com.loopers.event.ProductStockEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -14,8 +15,8 @@ public class OrderEventOutboxHandler {
   private final OutboxService outboxService;
 
   @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-  public void handle(OrderCreatedEvent event) {
-    kafkaTemplate.send("order-events", String.valueOf(event.orderId()), event)
+  public void handle(ProductStockEvent event) {
+    kafkaTemplate.send("catalog-events", String.valueOf(event.productId()), event)
         .whenComplete((result, ex) -> {
           if (ex == null) {
             outboxService.markPublished(event.eventId());

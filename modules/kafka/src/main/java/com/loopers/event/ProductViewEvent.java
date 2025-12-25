@@ -1,18 +1,19 @@
 package com.loopers.event;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record ProductViewEvent(
     String eventId,
     Long productId,
-    long timestamp
+    LocalDateTime createdAt
 ) {
 
   public static ProductViewEvent from(Long productId) {
     return new ProductViewEvent(
         UUID.randomUUID().toString(),
         productId,
-        System.currentTimeMillis()
+        LocalDateTime.now()
     );
   }
 }

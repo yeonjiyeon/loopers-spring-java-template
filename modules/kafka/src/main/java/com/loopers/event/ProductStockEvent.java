@@ -1,5 +1,6 @@
 package com.loopers.event;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record ProductStockEvent(
@@ -8,7 +9,7 @@ public record ProductStockEvent(
     int sellQuantity,
     int currentStock,
     long price,
-    long timestamp
+    LocalDateTime createdAt
 ) {
   public static ProductStockEvent of(Long productId, int sellQuantity, int currentStock, long price) {
     return new ProductStockEvent(
@@ -17,7 +18,7 @@ public record ProductStockEvent(
         sellQuantity,
         currentStock,
         price,
-        System.currentTimeMillis()
+        LocalDateTime.now()
     );
   }
 }
