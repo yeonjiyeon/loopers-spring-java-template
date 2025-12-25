@@ -7,14 +7,16 @@ public record ProductStockEvent(
     Long productId,
     int sellQuantity,
     int currentStock,
+    long price,
     long timestamp
 ) {
-  public static ProductStockEvent of(Long productId, int sellQuantity, int currentStock) {
+  public static ProductStockEvent of(Long productId, int sellQuantity, int currentStock, long price) {
     return new ProductStockEvent(
         UUID.randomUUID().toString(),
         productId,
         sellQuantity,
         currentStock,
+        price,
         System.currentTimeMillis()
     );
   }
