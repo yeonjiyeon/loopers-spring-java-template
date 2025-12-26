@@ -4,14 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loopers.domain.event.DomainEvent;
 import com.loopers.domain.event.FailedEvent;
 import com.loopers.infrastructure.event.FailedEventRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor

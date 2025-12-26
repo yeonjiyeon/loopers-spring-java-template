@@ -3,7 +3,7 @@ package com.loopers.infrastructure.payment;
 import com.loopers.domain.payment.Payment;
 import com.loopers.domain.payment.PaymentRepository;
 import com.loopers.domain.payment.PaymentStatus;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class PaymentRepositoryImpl implements PaymentRepository {
 
   @Override
   public List<Payment> findAllByStatusAndCreatedAtBefore(PaymentStatus paymentStatus,
-      LocalDateTime timeLimit) {
+      ZonedDateTime timeLimit) {
     return paymentJpaRepository.findAllByStatusAndCreatedAtBefore(paymentStatus, timeLimit);
   }
 

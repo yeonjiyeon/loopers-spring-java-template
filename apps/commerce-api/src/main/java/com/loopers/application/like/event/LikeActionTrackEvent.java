@@ -1,4 +1,4 @@
-package com.loopers.application.like;
+package com.loopers.application.like.event;
 
 import com.loopers.domain.event.UserActionTrackEvent;
 import java.time.ZonedDateTime;

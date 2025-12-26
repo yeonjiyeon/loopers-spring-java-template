@@ -1,6 +1,6 @@
 package com.loopers.application.payment;
 
-import com.loopers.application.order.OrderCreatedEvent;
+import com.loopers.application.order.event.OrderCreatedEvent;
 import com.loopers.application.payment.PaymentEvent.PaymentRequestFailedEvent;
 import com.loopers.application.payment.PaymentEvent.PaymentRequestedEvent;
 import com.loopers.domain.payment.Payment;
@@ -15,6 +15,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -28,14 +29,14 @@ public class PgPaymentEventListener {
   private final ApplicationEventPublisher eventPublisher;
 
   @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-  @Transactional
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void handleOrderCreatedEvent(OrderCreatedEvent event) {
 
     if (event.paymentType() != PaymentType.PG) {
       return;
     }
 
-    User user = userService.findById(event.user().getId())
+    User user = userService.findById(event.userId())
         .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "유저 정보를 찾을 수 없습니다."));
 
     PaymentProcessor processor = paymentProcessors.stream()

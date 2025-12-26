@@ -1,5 +1,6 @@
 package com.loopers.application.order;
 
+import com.loopers.application.order.event.OrderCreatedEvent;
 import com.loopers.domain.coupon.CouponService;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderCommand.Item;
@@ -62,9 +63,10 @@ public class OrderFacade {
 
     productService.deductStock(products, orderItems);
 
-    OrderCreatedEvent orderEvent = new OrderCreatedEvent(
+    OrderCreatedEvent orderEvent = OrderCreatedEvent.of(
         order.getId(),
         user,
+        orderItems,
         finalPaymentAmount,
         command.paymentType(),
         command.cardType(),

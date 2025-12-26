@@ -1,9 +1,11 @@
-package com.loopers.application.product;
+package com.loopers.application.product.event;
 
 import com.loopers.application.event.FailedEventStore;
-import com.loopers.application.like.LikeCreatedEvent;
+import com.loopers.application.like.event.LikeCreatedEvent;
+import com.loopers.event.LikeCountEvent;
 import com.loopers.domain.product.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -18,6 +20,7 @@ public class LikeCountAggregateListener {
 
   private final ProductService productService;
   private final FailedEventStore failedEventStore;
+  private final ApplicationEventPublisher eventPublisher;
 
 
   @Async
@@ -25,7 +28,13 @@ public class LikeCountAggregateListener {
   public void handleLikeCreatedEvent(LikeCreatedEvent event) {
 
     try {
-      performAggregation(event);
+      int updatedLikeCount = performAggregation(event);
+
+      eventPublisher.publishEvent(new LikeCountEvent(
+          event.eventId(),
+          event.productId(),
+          updatedLikeCount
+      ));
 
     } catch (ObjectOptimisticLockingFailureException e) {
 
@@ -38,11 +47,11 @@ public class LikeCountAggregateListener {
   }
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public void performAggregation(LikeCreatedEvent event) {
+  public int performAggregation(LikeCreatedEvent event) {
     if (event.increment() > 0) {
-      productService.increaseLikeCount(event.productId());
+      return productService.increaseLikeCount(event.productId());
     } else {
-      productService.decreaseLikeCount(event.productId());
+      return productService.decreaseLikeCount(event.productId());
     }
   }
 }
