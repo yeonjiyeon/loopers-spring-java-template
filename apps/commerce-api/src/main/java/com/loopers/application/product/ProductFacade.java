@@ -3,6 +3,7 @@ package com.loopers.application.product;
 import com.loopers.domain.brand.BrandService;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductService;
+import com.loopers.infrastructure.rank.RankingService;
 import com.loopers.event.ProductViewEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -16,6 +17,7 @@ public class ProductFacade {
 
   private final ProductService productService;
   private final BrandService brandService;
+  private final RankingService rankingService;
   private final ApplicationEventPublisher eventPublisher;
 
   public Page<ProductInfo> getProductsInfo(Pageable pageable) {
@@ -23,7 +25,7 @@ public class ProductFacade {
     return products.map(product -> {
       String brandName = brandService.getBrand(product.getBrandId())
           .getName();
-      return ProductInfo.from(product, brandName);
+      return ProductInfo.from(product, brandName, null);
     });
   }
 
@@ -32,9 +34,11 @@ public class ProductFacade {
     String brandName = brandService.getBrand(product.getBrandId())
         .getName();
 
+    Integer currentRank = rankingService.getProductRank(id);
+
     eventPublisher.publishEvent(ProductViewEvent.from(id));
 
-    return ProductInfo.from(product, brandName);
+    return ProductInfo.from(product, brandName, currentRank);
   }
 
 }

@@ -2,7 +2,7 @@ package com.loopers.application.rank;
 
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductService;
-import com.loopers.domain.rank.RankingService;
+import com.loopers.infrastructure.rank.RankingService;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
