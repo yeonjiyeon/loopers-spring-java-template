@@ -1,5 +1,7 @@
-package com.loopers.domain.rank;
+package com.loopers.infrastructure.rank;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -26,5 +28,14 @@ public class RankingService {
     return rankedIds.stream()
         .map(Long::valueOf)
         .toList();
+  }
+
+  public Integer getProductRank(Long productId) {
+    String today = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+    String key = "ranking:all:" + today;
+
+    Long rank = redisTemplate.opsForZSet().reverseRank(key, String.valueOf(productId));
+
+    return (rank != null) ? rank.intValue() + 1 : null;
   }
 }
