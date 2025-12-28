@@ -2,8 +2,8 @@ package com.loopers.application.product.event;
 
 import com.loopers.application.event.FailedEventStore;
 import com.loopers.application.like.event.LikeCreatedEvent;
-import com.loopers.event.LikeCountEvent;
 import com.loopers.domain.product.ProductService;
+import com.loopers.event.LikeCountEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -30,7 +30,7 @@ public class LikeCountAggregateListener {
     try {
       int updatedLikeCount = performAggregation(event);
 
-      eventPublisher.publishEvent(new LikeCountEvent(
+      eventPublisher.publishEvent(LikeCountEvent.of(
           event.eventId(),
           event.productId(),
           updatedLikeCount
