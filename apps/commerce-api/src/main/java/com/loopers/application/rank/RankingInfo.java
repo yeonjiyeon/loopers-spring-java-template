@@ -6,7 +6,7 @@ public record RankingInfo(
     Long productId,
     String productName,
     Long price,
-    int stock,
+    boolean isSoldOut,
     int currentRank
 ) {
 
@@ -15,7 +15,7 @@ public record RankingInfo(
         product.getId(),
         product.getName(),
         product.getPrice().getValue(),
-        product.getStock(),
+        product.getStock() <= 0,
         currentRank
     );
   }
