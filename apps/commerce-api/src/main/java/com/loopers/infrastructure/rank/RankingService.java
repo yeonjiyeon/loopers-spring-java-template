@@ -41,14 +41,4 @@ public class RankingService {
 
     return (rank != null) ? rank.intValue() + 1 : null;
   }
-
-  public void carryOverRanking(String sourceDate, String targetDate, double weight) {
-    String sourceKey = "ranking:all:" + sourceDate;
-    String targetKey = "ranking:all:" + targetDate;
-
-    redisTemplate.opsForZSet().unionAndStore(sourceKey, List.of(), targetKey,
-        Aggregate.SUM, Weights.of(weight));
-
-    redisTemplate.expire(targetKey, 2, TimeUnit.DAYS);
-  }
 }

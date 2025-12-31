@@ -1,6 +1,6 @@
 package com.loopers.application.rank;
 
-import com.loopers.infrastructure.rank.RankingService;
+import com.loopers.domain.rank.RankingService;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
