@@ -1,6 +1,8 @@
 package com.loopers.application.rank;
 
 import com.loopers.domain.product.Product;
+import com.loopers.domain.rank.monthly.MonthlyRankingMV;
+import com.loopers.domain.rank.weekly.WeeklyRankingMV;
 
 public record RankingInfo(
     Long productId,
@@ -17,6 +19,26 @@ public record RankingInfo(
         product.getPrice().getValue(),
         product.getStock() <= 0,
         currentRank
+    );
+  }
+
+  public static RankingInfo from(WeeklyRankingMV mv) {
+    return new RankingInfo(
+        mv.getProductId(),
+        mv.getProductName(),
+        mv.getPrice(),
+        mv.isSoldOut(),
+        mv.getCurrentRank()
+    );
+  }
+
+  public static RankingInfo from(MonthlyRankingMV mv) {
+    return new RankingInfo(
+        mv.getProductId(),
+        mv.getProductName(),
+        mv.getPrice(),
+        mv.isSoldOut(),
+        mv.getCurrentRank()
     );
   }
 }
